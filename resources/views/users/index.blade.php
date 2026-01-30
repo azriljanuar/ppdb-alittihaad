@@ -31,6 +31,11 @@
                 <i class="bi bi-mortarboard me-2"></i> Akun Siswa
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold px-4 rounded-pill border ms-2" id="pills-cetak-tab" data-bs-toggle="pill" data-bs-target="#pills-cetak" type="button" role="tab">
+                <i class="bi bi-printer-fill me-2"></i> Cetak Kartu
+            </button>
+        </li>
     </ul>
 
     <div class="tab-content" id="pills-tabContent">
@@ -134,6 +139,108 @@
                 </div>
             </div>
         </div>
+
+        <div class="tab-pane fade" id="pills-cetak" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-shield-lock-fill me-2"></i> Kartu Login Admin</h5>
+                    <div class="alert alert-warning small border-0 bg-warning bg-opacity-10">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Password Admin terenkripsi demi keamanan. Kartu hanya akan menampilkan Email/Username.
+                    </div>
+                    
+                    <form action="{{ url('/users/cetak-kartu-massal') }}" method="POST" target="_blank">
+                        @csrf
+                        <input type="hidden" name="type" value="admin">
+                        
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary btn-sm fw-bold">
+                                <i class="bi bi-printer-fill me-2"></i> Cetak Terpilih
+                            </button>
+                            <span class="text-muted ms-2 small">* Centang data yang ingin dicetak</span>
+                        </div>
+
+                        <div class="table-responsive mb-5">
+                            <table class="table table-hover align-middle border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center" width="40"><input type="checkbox" class="form-check-input" onclick="toggleAll(this, 'check-admin')"></th>
+                                        <th>Nama</th>
+                                        <th>Email (Username)</th>
+                                        <th class="text-center" width="150">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($users as $u)
+                                    <tr>
+                                        <td class="text-center"><input type="checkbox" name="ids[]" value="{{ $u->id }}" class="form-check-input check-admin"></td>
+                                        <td class="fw-bold">{{ $u->name }}</td>
+                                        <td>{{ $u->email }}</td>
+                                        <td class="text-center">
+                                            <a href="{{ url('/users/cetak-kartu?type=admin&id='.$u->id) }}" target="_blank" class="btn btn-sm btn-dark shadow-sm">
+                                                <i class="bi bi-printer-fill me-2"></i> Cetak
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+
+                    <h5 class="fw-bold mb-3 text-success"><i class="bi bi-mortarboard-fill me-2"></i> Kartu Login Siswa</h5>
+                    
+                    <form action="{{ url('/users/cetak-kartu-massal') }}" method="POST" target="_blank">
+                        @csrf
+                        <input type="hidden" name="type" value="siswa">
+                        
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-success btn-sm fw-bold">
+                                <i class="bi bi-printer-fill me-2"></i> Cetak Terpilih
+                            </button>
+                            <span class="text-muted ms-2 small">* Centang data yang ingin dicetak</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center" width="40"><input type="checkbox" class="form-check-input" onclick="toggleAll(this, 'check-siswa')"></th>
+                                        <th>Nama Siswa</th>
+                                        <th>No Daftar (Username)</th>
+                                        <th>Password</th>
+                                        <th class="text-center" width="150">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($siswas as $s)
+                                    <tr>
+                                        <td class="text-center"><input type="checkbox" name="ids[]" value="{{ $s->id }}" class="form-check-input check-siswa"></td>
+                                        <td class="fw-bold">{{ $s->nama_lengkap }}</td>
+                                        <td class="fw-bold text-primary">{{ $s->no_daftar }}</td>
+                                        <td class="font-monospace text-danger">{{ $s->password }}</td>
+                                        <td class="text-center">
+                                            <a href="{{ url('/users/cetak-kartu?type=siswa&id='.$s->id) }}" target="_blank" class="btn btn-sm btn-dark shadow-sm">
+                                                <i class="bi bi-printer-fill me-2"></i> Cetak
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        function toggleAll(source, className) {
+            checkboxes = document.getElementsByClassName(className);
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+        </script>
 
     </div>
 </div>

@@ -77,6 +77,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::resource('brosur', BrosurController::class)->except(['create', 'edit', 'update', 'show']);
 
     // --- KELOLA USER & PENDAFTAR ---
+    Route::get('/users/cetak-kartu', [UserController::class, 'cetakKartu']);
+    Route::post('/users/cetak-kartu-massal', [UserController::class, 'cetakKartuMassal']);
     Route::resource('users', UserController::class);
     Route::put('/users/siswa/{id}', [UserController::class, 'updateAkunSiswa']); // Update password siswa
 

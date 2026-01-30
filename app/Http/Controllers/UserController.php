@@ -92,4 +92,39 @@ class UserController extends Controller
 
         return redirect()->back()->with('error', 'Password tidak boleh kosong!');
     }
+
+    // 6. CETAK KARTU USER
+    public function cetakKartu(Request $request) {
+        $type = $request->query('type');
+        $id = $request->query('id');
+        
+        $data = null;
+        if($type == 'admin') {
+            $data = User::findOrFail($id);
+        } else {
+            $data = Pendaftar::findOrFail($id);
+        }
+        
+        return view('users.cetak_kartu', compact('data', 'type'));
+    }
+
+    // 7. CETAK KARTU MASSAL
+    public function cetakKartuMassal(Request $request) {
+        $type = $request->input('type');
+        $ids = $request->input('ids');
+
+        if(empty($ids)) {
+            return redirect()->back()->with('error', 'Pilih minimal satu data untuk dicetak!');
+        }
+
+        $data_collection = [];
+        if($type == 'admin') {
+            $data_collection = User::whereIn('id', $ids)->get();
+        } else {
+            $data_collection = Pendaftar::whereIn('id', $ids)->get();
+        }
+
+        // Kita kirim sebagai 'data_collection' agar view bisa looping
+        return view('users.cetak_kartu', compact('data_collection', 'type'));
+    }
 }
