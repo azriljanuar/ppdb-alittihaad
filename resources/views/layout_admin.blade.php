@@ -135,6 +135,10 @@
 
             <div class="mt-4 px-3 text-uppercase small opacity-50 fw-bold" style="font-size: 0.75rem;">Lainnya</div>
             
+            <a href="{{ route('user.change-password') }}" class="list-group-item {{ Request::is('profile/change-password') ? 'active' : '' }}">
+                <i class="bi bi-key"></i> Ganti Password
+            </a>
+
             <a href="{{ url('/') }}" target="_blank" class="list-group-item">
                 <i class="bi bi-globe"></i> Lihat Website
             </a>

@@ -22,6 +22,7 @@ class InfoController extends Controller
 
         // Ensure 'Profile' category exists for each jenjang
         foreach ($allowed_jenjangs as $jenjang) {
+            if (!$jenjang) continue; // Skip if jenjang is null
             Info::firstOrCreate(
                 ['jenjang' => $jenjang, 'kategori' => 'Profile'],
                 ['judul' => 'Profil ' . $jenjang, 'deskripsi' => '']
@@ -49,7 +50,7 @@ class InfoController extends Controller
         $info = Info::findOrFail($id);
 
         $user = Auth::user();
-        if ($user->role != 'superadmin' && $info->jenjang != $user->akses_jenjang) {
+        if ($user->role != 'superadmin' && $info->jenjang != $user->jenjang_access) {
             return back()->with('error', 'Akses Ditolak!');
         }
 
@@ -89,45 +90,51 @@ class InfoController extends Controller
 
             // --- 2. LOGIKA JADWAL (UPDATE: DINAMIS JSON) ---
         } elseif ($info->kategori == 'Jadwal') {
-            $raw = $request->input('jadwal_raw', '');
+            // --- LOGIKA JADWAL BARU (DENGAN TABEL INPUT) ---
+            $kegiatans = $request->input('jadwal_kegiatan', []);
+            $tgl_mulais = $request->input('jadwal_tgl_mulai', []);
+            $tgl_selesais = $request->input('jadwal_tgl_selesai', []);
+            
             $jadwalData = [];
             $htmlRows = '';
 
-            if (is_string($raw) && strlen(trim($raw)) > 0) {
-                $lines = preg_split("/\\r\\n|\\n|\\r/", $raw);
-                foreach ($lines as $line) {
-                    $line = trim($line);
-                    if ($line === '') continue;
-                    $parts = array_map('trim', explode('|', $line, 2));
-                    $kgt = $parts[0] ?? '';
-                    $tgl = $parts[1] ?? '-';
-                    if ($kgt !== '') {
-                        $jadwalData[] = ['kegiatan' => $kgt, 'tanggal' => $tgl];
-                        $htmlRows .= "
-                            <tr style='border-bottom: 1px solid #f0f0f0;'>
-                                <td style='padding: 12px 5px; color: #6c757d; width: 40%;'>{$kgt}</td>
-                                <td style='padding: 12px 5px; font-weight: 700; color: #333; text-align: right;'>{$tgl}</td>
-                            </tr>";
+            if (is_array($kegiatans)) {
+                foreach ($kegiatans as $index => $kgt) {
+                    if (empty($kgt)) continue;
+                    
+                    $mulai = $tgl_mulais[$index] ?? null;
+                    $selesai = $tgl_selesais[$index] ?? null;
+                    
+                    // Format Display String untuk HTML
+                    $displayDate = '-';
+                    if ($mulai) {
+                        try {
+                            $dtMulai = Carbon::parse($mulai)->locale('id')->translatedFormat('d F Y');
+                            $displayDate = $dtMulai;
+                            
+                            if ($selesai) {
+                                $dtSelesai = Carbon::parse($selesai)->locale('id')->translatedFormat('d F Y');
+                                if ($mulai !== $selesai) {
+                                    $displayDate .= ' s/d ' . $dtSelesai;
+                                }
+                            }
+                        } catch (\Exception $e) {
+                            $displayDate = $mulai; // Fallback jika format error
+                        }
                     }
-                }
-            }
 
-            if ($htmlRows === '') {
-                $kegiatan = $request->input('kegiatan', []);
-                $tanggal = $request->input('tanggal', []);
-                if (!is_array($kegiatan)) $kegiatan = [];
-                if (!is_array($tanggal)) $tanggal = [];
-                foreach ($kegiatan as $index => $kgt) {
-                    $kgt = trim($kgt);
-                    $tgl = trim($tanggal[$index] ?? '-');
-                    if ($kgt !== '') {
-                        $jadwalData[] = ['kegiatan' => $kgt, 'tanggal' => $tgl];
-                        $htmlRows .= "
-                            <tr style='border-bottom: 1px solid #f0f0f0;'>
-                                <td style='padding: 12px 5px; color: #6c757d; width: 40%;'>{$kgt}</td>
-                                <td style='padding: 12px 5px; font-weight: 700; color: #333; text-align: right;'>{$tgl}</td>
-                            </tr>";
-                    }
+                    $jadwalData[] = [
+                        'kegiatan' => $kgt,
+                        'tgl_mulai' => $mulai,
+                        'tgl_selesai' => $selesai,
+                        'tanggal' => $displayDate 
+                    ];
+
+                    $htmlRows .= "
+                        <tr style='border-bottom: 1px solid #f0f0f0;'>
+                            <td style='padding: 12px 5px; color: #6c757d; width: 40%;'>{$kgt}</td>
+                            <td style='padding: 12px 5px; font-weight: 700; color: #333; text-align: right;'>{$displayDate}</td>
+                        </tr>";
                 }
             }
 
@@ -152,20 +159,41 @@ class InfoController extends Controller
 
             // --- 3. SYARAT/BEASISWA ---
         } elseif ($info->kategori == 'Syarat' || $info->kategori == 'Beasiswa') {
-            $raw = ($info->kategori == 'Syarat') ? $request->syarat_raw : $request->beasiswa_raw;
-            $lines = explode("\n", $raw);
-            $listHtml = "<ul style='padding-left: 20px; line-height: 1.6;'>";
-            foreach ($lines as $line) {
-                if (trim($line) != "")
-                    $listHtml .= "<li style='margin-bottom: 5px;'>" . trim($line) . "</li>";
-            }
-            $listHtml .= "</ul>";
+            $jenisList = $request->input('list_jenis', []);
+            $ketList = $request->input('list_keterangan', []);
+            
+            $jsonData = [];
+            $htmlRows = '';
 
-            $dataUpdate = ['deskripsi' => $listHtml];
-            if ($info->kategori == 'Syarat')
-                $dataUpdate['syarat_raw'] = $raw;
-            else
-                $dataUpdate['beasiswa_raw'] = $raw;
+            if (is_array($jenisList)) {
+                foreach ($jenisList as $index => $jenis) {
+                    $jenis = trim($jenis ?? '');
+                    $ket = trim($ketList[$index] ?? '');
+                    
+                    if ($jenis === '' && $ket === '') continue;
+
+                    $jsonData[] = ['jenis' => $jenis, 'keterangan' => $ket];
+                    
+                    $htmlRows .= "<li style='margin-bottom: 8px; padding-left: 8px;'>";
+                    if ($jenis) $htmlRows .= "<strong style='color: #333;'>{$jenis}</strong>";
+                    if ($jenis && $ket) $htmlRows .= ": ";
+                    if ($ket) $htmlRows .= "<span style='color: #555;'>{$ket}</span>";
+                    $htmlRows .= "</li>";
+                }
+            }
+            
+            if ($htmlRows === '') {
+                $htmlRows = "<li style='color: #999; font-style: italic;'>Belum ada data.</li>";
+            }
+            
+            $htmlContent = "<ol style='padding-left: 20px; line-height: 1.6;'>{$htmlRows}</ol>";
+
+            $dataUpdate = ['deskripsi' => $htmlContent];
+            if ($info->kategori == 'Syarat') {
+                $dataUpdate['syarat_json'] = $jsonData;
+            } else {
+                $dataUpdate['beasiswa_json'] = $jsonData;
+            }
             $info->update($dataUpdate);
             
             // --- 4. LOGIKA PROFILE (GAMBAR & DESKRIPSI) ---

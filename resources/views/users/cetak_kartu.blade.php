@@ -70,6 +70,7 @@
             body {
                 background-color: white;
                 -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
             .no-print {
                 display: none;

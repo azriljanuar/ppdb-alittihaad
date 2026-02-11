@@ -19,7 +19,9 @@
                 </div>
             @endif
 
-            <form action="{{ route('biaya.simpan') }}" method="POST" id="formBiaya">
+            <form action="{{ route('biaya.simpan') }}" method="POST" id="formBiaya" 
+                data-biaya-items="{{ json_encode($biaya_items) }}" 
+                data-selected-jenjang="{{ $selectedJenjang }}">
                 @csrf
                 <div class="card bg-light border-0 mb-4">
                     <div class="card-body">
@@ -34,6 +36,12 @@
                                         <option value="Non-Asrama">Non-Asrama (Full Day)</option>
                                     </select>
                                 </div>
+                            @elseif(in_array($selectedJenjang, ['PAUD','RA/TK','MDU']))
+                                {{-- Kategori Umum untuk jenjang ini --}}
+                                <input type="hidden" name="kategori" id="pilihKategori" value="Biaya Pendidikan">
+                                <div class="col-md-4 d-flex align-items-center">
+                                    <span class="badge text-bg-light border">Kategori: Biaya Pendidikan</span>
+                                </div>
                             @else
                                 <input type="hidden" name="kategori" id="pilihKategori" value="Non-Asrama">
                                 <div class="col-md-4 d-flex align-items-center">
@@ -41,12 +49,22 @@
                                 </div>
                             @endif
 
-                            <div class="col-md-4">
-                                <select name="gender" id="pilihGender" class="form-select" required>
-                                    <option value="Putra">Putra</option>
-                                    <option value="Putri">Putri</option>
-                                </select>
-                            </div>
+                            {{-- Gender Selection Logic --}}
+                            @if(in_array($selectedJenjang, ['PAUD','RA/TK','MDU']))
+                                {{-- Jika jenjang ini, gender diset otomatis ke 'Putra' tapi backend akan pakai logika display merged --}}
+                                {{-- Kita hide dropdown tapi set value default --}}
+                                <input type="hidden" name="gender" id="pilihGender" value="Putra">
+                                <div class="col-md-4 d-flex align-items-center">
+                                    <span class="badge text-bg-info text-white border"><i class="bi bi-info-circle me-1"></i> Berlaku untuk Semua (Putra/Putri)</span>
+                                </div>
+                            @else
+                                <div class="col-md-4">
+                                    <select name="gender" id="pilihGender" class="form-select" required>
+                                        <option value="Putra">Putra</option>
+                                        <option value="Putri">Putri</option>
+                                    </select>
+                                </div>
+                            @endif
                         </div>
                         <div id="loadingData" class="text-primary small d-none mt-2">
                             <span class="spinner-border spinner-border-sm me-1"></span> Mengambil data...
@@ -91,8 +109,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        const allData = @json($biaya_items);
-        const selectedJenjang = @json($selectedJenjang);
+        const $form = $('#formBiaya');
+        const allData = $form.data('biaya-items');
+        const selectedJenjang = $form.data('selected-jenjang');
 
         // Helper untuk set value aman
         function safeVal(selector, val) {

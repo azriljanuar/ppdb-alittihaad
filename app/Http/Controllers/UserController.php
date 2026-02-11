@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Pendaftar; // <--- JANGAN LUPA INI
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -27,19 +29,21 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
             'role' => 'required'
         ]);
+
+        $generatedPassword = Str::random(8);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($generatedPassword),
+            'password_text' => $generatedPassword,
             'role' => $request->role,
             'jenjang_access' => $request->role == 'superadmin' ? null : $request->jenjang_access,
         ]);
 
-        return redirect()->back()->with('success', 'User Admin berhasil ditambahkan!');
+        return redirect()->back()->with('success', 'User Admin berhasil ditambahkan! Password: ' . $generatedPassword);
     }
 
     // 3. UPDATE DATA ADMIN (Fitur Edit)
@@ -62,6 +66,7 @@ class UserController extends Controller
         // Kalau password diisi, baru kita update. Kalau kosong, biarkan password lama.
         if($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
+            $data['password_text'] = $request->password;
         }
 
         $user->update($data);
@@ -101,8 +106,12 @@ class UserController extends Controller
         $data = null;
         if($type == 'admin') {
             $data = User::findOrFail($id);
+            // Password admin diambil dari password_text
+            $data->password_plain = $data->password_text; 
         } else {
             $data = Pendaftar::findOrFail($id);
+            // Password siswa sudah plain di kolom password (sesuai implementasi sebelumnya)
+            $data->password_plain = $data->password;
         }
         
         return view('users.cetak_kartu', compact('data', 'type'));
@@ -120,11 +129,43 @@ class UserController extends Controller
         $data_collection = [];
         if($type == 'admin') {
             $data_collection = User::whereIn('id', $ids)->get();
+            // Map password plain
+            $data_collection->map(function($user) {
+                $user->password_plain = $user->password_text;
+                return $user;
+            });
         } else {
             $data_collection = Pendaftar::whereIn('id', $ids)->get();
+            // Map password plain
+            $data_collection->map(function($siswa) {
+                $siswa->password_plain = $siswa->password;
+                return $siswa;
+            });
         }
 
         // Kita kirim sebagai 'data_collection' agar view bisa looping
         return view('users.cetak_kartu', compact('data_collection', 'type'));
+    }
+
+    // 8. GANTI PASSWORD SENDIRI (Admin Login)
+    public function showChangePasswordForm()
+    {
+        return view('users.change_password');
+    }
+
+    public function updateCurrentPassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = Auth::user();
+        /** @var \App\Models\User $user */
+        $user->update([
+            'password' => Hash::make($request->password),
+            'password_text' => $request->password
+        ]);
+
+        return back()->with('success', 'Password berhasil diperbarui!');
     }
 }

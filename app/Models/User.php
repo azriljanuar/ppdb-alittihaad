@@ -21,8 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'password_text',
         'role',
-        'akses_jenjang',
+        'jenjang_access',
     ];
 
     /**

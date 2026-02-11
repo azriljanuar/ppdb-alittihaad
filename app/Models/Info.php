@@ -10,6 +10,8 @@ class Info extends Model
 
     protected $casts = [
         'jadwal_json' => 'array',
+        'syarat_json' => 'array',
+        'beasiswa_json' => 'array',
         'images' => 'array',
     ];
 }

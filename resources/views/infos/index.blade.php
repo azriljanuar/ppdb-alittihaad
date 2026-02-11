@@ -45,9 +45,11 @@
                             
                             @if($item->kategori == 'Biaya')
                                 {{-- Tombol ke Halaman Kelola Biaya (BiayaController) --}}
-                                <a href="{{ route('biaya.index', ['jenjang' => $item->jenjang]) }}" class="btn btn-warning btn-sm fw-bold text-dark">
-                                    <i class="bi bi-gear-fill me-1"></i> Kelola Rincian (Asrama/Gender)
-                                </a>
+                                @if($jenjang != 'SDIT')
+                                    <a href="{{ route('biaya.index', ['jenjang' => $item->jenjang]) }}" class="btn btn-warning btn-sm fw-bold text-dark">
+                                        <i class="bi bi-gear-fill me-1"></i> Kelola Rincian (Asrama/Gender)
+                                    </a>
+                                @endif
                             @else
                                 {{-- DEFAULT: Tombol Modal Edit Biasa --}}
                                 <button type="button" class="btn btn-warning btn-sm fw-bold text-dark btn-edit-trigger" 
@@ -69,6 +71,11 @@
                                     data-jt2="{{ $item->jadwal_tes_2 }}"
                                     data-jg2="{{ $item->jadwal_pengumuman_2 }}"
 
+                                    data-jadwal-json="{{ $item->kategori == 'Jadwal' ? json_encode($item->jadwal_json ?? []) : '[]' }}"
+                                    
+                                    data-syarat-json="{{ $item->kategori == 'Syarat' ? json_encode($item->syarat_json ?? []) : '[]' }}"
+                                    data-beasiswa-json="{{ $item->kategori == 'Beasiswa' ? json_encode($item->beasiswa_json ?? []) : '[]' }}"
+
                                     data-images="{{ $item->kategori == 'Profile' ? json_encode($item->images ?? []) : '[]' }}"
 
                                     data-raw="{{ htmlspecialchars($item->kategori == 'Syarat' ? $item->syarat_raw : $item->beasiswa_raw) }}"
@@ -82,46 +89,62 @@
                             
                             {{-- TAMPILAN TABEL BIAYA --}}
                             @if($item->kategori == 'Biaya')
-                                @php
-                                    // Ambil data biaya dinamis yang dikirim dari InfoController
-                                    $dataBiaya = isset($biayaItems) ? $biayaItems->where('jenjang', $item->jenjang) : collect([]);
-                                @endphp
-
-                                @if($dataBiaya->count() > 0)
-                                    <div class="bg-white p-3 border rounded">
-                                        @foreach($dataBiaya->groupBy('kategori') as $kategori => $genders)
-                                            <div class="mb-3 p-2 bg-light border rounded">
-                                                <strong class="text-dark text-uppercase small ls-1"><i class="bi bi-building"></i> {{ $kategori }}</strong>
-                                                <div class="row mt-2">
-                                                    @foreach($genders->groupBy('gender') as $gender => $listBiaya)
-                                                        <div class="col-md-6">
-                                                            <div class="card border mb-2">
-                                                                <div class="card-header py-1 bg-secondary bg-opacity-10 text-dark fw-bold" style="font-size: 0.8rem;">
-                                                                    {{ $gender }}
-                                                                </div>
-                                                                <ul class="list-group list-group-flush small">
-                                                                    @foreach($listBiaya as $b)
-                                                                        <li class="list-group-item d-flex justify-content-between px-2 py-1">
-                                                                            <span class="text-dark">{{ $b->nama_item }}</span>
-                                                                            <span class="fw-bold text-dark">Rp {{ number_format($b->nominal, 0, ',', '.') }}</span>
-                                                                        </li>
-                                                                    @endforeach
-                                                                    <li class="list-group-item d-flex justify-content-between px-2 py-1 bg-white border-top">
-                                                                        <strong class="text-dark">TOTAL</strong>
-                                                                        <strong class="text-dark">Rp {{ number_format($listBiaya->sum('nominal'), 0, ',', '.') }}</strong>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endforeach
+                                @if($jenjang == 'SDIT')
+                                    <div class="alert alert-info text-center small mb-0">
+                                        <i class="bi bi-info-circle me-1"></i> Informasi rincian biaya untuk SDIT tidak ditampilkan.
                                     </div>
                                 @else
-                                    <div class="alert alert-info text-center small mb-0">
-                                        <i class="bi bi-info-circle me-1"></i> Data rincian biaya belum diinput.
-                                    </div>
+                                    @php
+                                        // Ambil data biaya dinamis yang dikirim dari InfoController
+                                        $dataBiaya = isset($biayaItems) ? $biayaItems->where('jenjang', $item->jenjang) : collect([]);
+                                    @endphp
+    
+                                    @if($dataBiaya->count() > 0)
+                                        <div class="bg-white p-3 border rounded">
+                                            @foreach($dataBiaya->groupBy('kategori') as $kategori => $genders)
+                                                @php
+                                                    $displayKategori = $kategori;
+                                                    // Jika merged view (PAUD, RA/TK, MDU)
+                                                    if(in_array($item->jenjang, ['PAUD', 'RA/TK', 'MDU'])) {
+                                                        // Hapus Asrama / Non Asrama jika ada
+                                                        $displayKategori = str_replace(['Asrama', 'Non-Asrama', 'Non Asrama'], '', $kategori);
+                                                        if(trim($displayKategori) == '') $displayKategori = 'Biaya Pendidikan';
+                                                    }
+                                                @endphp
+
+                                                <div class="mb-3 p-2 bg-light border rounded">
+                                                    <strong class="text-dark text-uppercase small ls-1"><i class="bi bi-building"></i> {{ $displayKategori }}</strong>
+                                                    <div class="row mt-2">
+                                                        @foreach($genders->groupBy('gender') as $gender => $listBiaya)
+                                                            <div class="col-md-6">
+                                                                <div class="card border mb-2">
+                                                                    <div class="card-header py-1 bg-secondary bg-opacity-10 text-dark fw-bold" style="font-size: 0.8rem;">
+                                                                        {{ in_array($item->jenjang, ['PAUD', 'RA/TK', 'MDU']) ? 'Nominal' : $gender }}
+                                                                    </div>
+                                                                    <ul class="list-group list-group-flush small">
+                                                                        @foreach($listBiaya as $b)
+                                                                            <li class="list-group-item d-flex justify-content-between px-2 py-1">
+                                                                                <span class="text-dark">{{ $b->nama_item }}</span>
+                                                                                <span class="fw-bold text-dark">Rp {{ number_format($b->nominal, 0, ',', '.') }}</span>
+                                                                            </li>
+                                                                        @endforeach
+                                                                        <li class="list-group-item d-flex justify-content-between px-2 py-1 bg-white border-top">
+                                                                            <strong class="text-dark">TOTAL</strong>
+                                                                            <strong class="text-dark">Rp {{ number_format($listBiaya->sum('nominal'), 0, ',', '.') }}</strong>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div class="alert alert-info text-center small mb-0">
+                                            <i class="bi bi-info-circle me-1"></i> Data rincian biaya belum diinput.
+                                        </div>
+                                    @endif
                                 @endif
 
                             {{-- TAMPILAN HTML BIASA (JADWAL, SYARAT, DLL) --}}
@@ -168,14 +191,50 @@
 
                     {{-- Area Jadwal --}}
                     <div id="areaJadwal" class="form-area" style="display: none;">
-                        <div class="alert alert-info small"><i class="bi bi-info-circle me-1"></i> Format: Nama Kegiatan | Tanggal. Satu baris satu kegiatan.</div>
-                        <textarea name="jadwal_raw" id="in_jadwal_raw" class="form-control" rows="8" placeholder="Contoh:\nPendaftaran | 1 Jan - 30 Jan 2026\nTes Seleksi | 5 Feb 2026\nPengumuman | 10 Feb 2026"></textarea>
+                        <div class="alert alert-info small mb-3">
+                            <i class="bi bi-info-circle me-1"></i> Masukkan jadwal kegiatan satu per satu. Klik tombol "+" untuk menambah baris.
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm" id="tableJadwal">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Nama Kegiatan</th>
+                                        <th style="width: 160px;">Dari Tanggal</th>
+                                        <th style="width: 160px;">Sampai Tanggal</th>
+                                        <th style="width: 50px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bodyJadwal">
+                                    {{-- Baris akan ditambahkan via JS --}}
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-success btn-sm mt-2" onclick="addJadwalRow()">
+                            <i class="bi bi-plus-circle me-1"></i> Tambah Kegiatan
+                        </button>
                     </div>
 
-                    {{-- Area List (Syarat/Beasiswa) --}}
-                    <div id="areaList" class="form-area" style="display: none;">
-                        <div class="alert alert-warning small"><i class="bi bi-list-ul me-1"></i> Tulis satu poin per baris. Enter untuk baris baru.</div>
-                        <textarea name="syarat_raw" id="in_raw" class="form-control" rows="10"></textarea>
+                    {{-- Area Table List (Syarat/Beasiswa) --}}
+                    <div id="areaTableList" class="form-area" style="display: none;">
+                        <div class="alert alert-info small mb-3">
+                            <i class="bi bi-info-circle me-1"></i> Masukkan poin-poin satu per satu.
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm" id="tableList">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th style="width: 30%;">Jenis / Judul</th>
+                                        <th>Keterangan</th>
+                                        <th style="width: 50px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bodyList"></tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-success btn-sm mt-2" onclick="addListRow()">
+                            <i class="bi bi-plus-circle me-1"></i> Tambah Baris
+                        </button>
                     </div>
 
                     {{-- Area Editor Umum --}}
@@ -211,6 +270,33 @@
 </div>
 
 <script>
+    window.addJadwalRow = function(kegiatan = '', tgl_mulai = '', tgl_selesai = '') {
+        var html = `
+            <tr>
+                <td><input type="text" name="jadwal_kegiatan[]" class="form-control form-control-sm" value="${kegiatan}" required placeholder="Nama Kegiatan"></td>
+                <td><input type="date" name="jadwal_tgl_mulai[]" class="form-control form-control-sm" value="${tgl_mulai}" required></td>
+                <td><input type="date" name="jadwal_tgl_selesai[]" class="form-control form-control-sm" value="${tgl_selesai}"></td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm py-0 px-1" onclick="$(this).closest('tr').remove()"><i class="bi bi-x"></i></button>
+                </td>
+            </tr>
+        `;
+        $('#bodyJadwal').append(html);
+    }
+
+    window.addListRow = function(jenis = '', keterangan = '') {
+        var html = `
+            <tr>
+                <td><input type="text" name="list_jenis[]" class="form-control form-control-sm" value="${jenis}" placeholder="Contoh: Fotokopi KK"></td>
+                <td><input type="text" name="list_keterangan[]" class="form-control form-control-sm" value="${keterangan}" placeholder="Keterangan detail..."></td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm py-0 px-1" onclick="$(this).closest('tr').remove()"><i class="bi bi-x"></i></button>
+                </td>
+            </tr>
+        `;
+        $('#bodyList').append(html);
+    }
+
     $(document).ready(function() {
         $('#summernote').summernote({ height: 200 });
         $('#summernoteProfile').summernote({ height: 200 });
@@ -229,33 +315,52 @@
             } 
             else if(kat === 'Jadwal') {
                 $('#areaJadwal').show();
-                var raw = '';
+                $('#bodyJadwal').empty();
+                
                 var jadwalJsonRaw = $(this).attr('data-jadwal-json') || '[]';
+                var hasData = false;
                 try {
                     var arr = JSON.parse(jadwalJsonRaw);
                     if (Array.isArray(arr) && arr.length > 0) {
-                        arr.forEach(function(it){ raw += (it.kegiatan||'') + ' | ' + (it.tanggal||'') + '\n'; });
+                        arr.forEach(function(it){ 
+                            addJadwalRow(it.kegiatan || '', it.tgl_mulai || '', it.tgl_selesai || '');
+                            hasData = true;
+                        });
                     }
                 } catch(e) {}
-                if (!raw) {
-                    var jp1 = ($(this).data('jp1') || "").split('|');
-                    var jp2 = ($(this).data('jp2') || "").split('|');
-                    var jt1 = $(this).data('jt1');
-                    var jg1 = $(this).data('jg1');
-                    var jt2 = $(this).data('jt2');
-                    var jg2 = $(this).data('jg2');
-                    if(jp1[0] || jp1[1]) raw += 'Pendaftaran Gelombang 1 | ' + (jp1[0]||'') + ' s/d ' + (jp1[1]||'') + '\n';
-                    if(jt1) raw += 'Tes Seleksi Gelombang 1 | ' + jt1 + '\n';
-                    if(jg1) raw += 'Pengumuman Gelombang 1 | ' + jg1 + '\n';
-                    if(jp2[0] || jp2[1]) raw += 'Pendaftaran Gelombang 2 | ' + (jp2[0]||'') + ' s/d ' + (jp2[1]||'') + '\n';
-                    if(jt2) raw += 'Tes Seleksi Gelombang 2 | ' + jt2 + '\n';
-                    if(jg2) raw += 'Pengumuman Gelombang 2 | ' + jg2 + '\n';
+                
+                if (!hasData) {
+                    addJadwalRow();
                 }
-                $('#in_jadwal_raw').val(raw.trim());
             }
             else if(kat === 'Syarat' || kat === 'Beasiswa') {
-                $('#areaList').show(); $('#in_raw').val($(this).data('raw'));
-                $('#in_raw').attr('name', kat === 'Syarat' ? 'syarat_raw' : 'beasiswa_raw');
+                $('#areaTableList').show();
+                $('#bodyList').empty();
+                
+                var jsonRaw = (kat === 'Syarat') ? $(this).attr('data-syarat-json') : $(this).attr('data-beasiswa-json');
+                var hasData = false;
+                try {
+                    var arr = JSON.parse(jsonRaw);
+                    if (Array.isArray(arr) && arr.length > 0) {
+                        arr.forEach(function(it){ 
+                            addListRow(it.jenis || '', it.keterangan || '');
+                            hasData = true;
+                        });
+                    }
+                } catch(e) {}
+                
+                // Fallback to raw text if json is empty (Migration logic)
+                if (!hasData) {
+                    var rawText = $(this).data('raw') || '';
+                    if(rawText) {
+                        var lines = rawText.toString().split('\n');
+                        lines.forEach(function(line){
+                            if(line.trim()) addListRow('', line.trim()); 
+                        });
+                    } else {
+                        addListRow();
+                    }
+                }
             }
             else if(kat === 'Profile') {
                 $('#areaProfile').show();

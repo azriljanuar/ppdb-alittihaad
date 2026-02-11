@@ -49,6 +49,7 @@
                                 <tr>
                                     <th class="text-center">No</th>
                                     <th>Nama & Email</th>
+                                    <th>Password</th>
                                     <th class="text-center">Role</th>
                                     <th class="text-center">Akses</th>
                                     <th class="text-center">Aksi</th>
@@ -62,12 +63,15 @@
                                         <div class="fw-bold text-dark">{{ $user->name }}</div>
                                         <div class="small text-muted">{{ $user->email }}</div>
                                     </td>
+                                    <td>
+                                        <span class="font-monospace bg-light border rounded px-2 py-1 text-danger small fw-bold">{{ $user->password_text ?? '-' }}</span>
+                                    </td>
                                     <td class="text-center">
                                         <span class="badge {{ $user->role == 'superadmin' ? 'bg-warning text-dark' : 'bg-primary' }} rounded-pill px-3">
                                             {{ ucfirst($user->role) }}
                                         </span>
                                     </td>
-                                    <td class="text-center">{{ $user->akses_jenjang ?? 'Semua' }}</td>
+                                    <td class="text-center">{{ $user->jenjang_access ?? 'Semua' }}</td>
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-warning text-white me-1 btn-edit-admin" 
                                             data-bs-toggle="modal" 
@@ -76,7 +80,7 @@
                                             data-name="{{ $user->name }}"
                                             data-email="{{ $user->email }}"
                                             data-role="{{ $user->role }}"
-                                            data-jenjang="{{ $user->akses_jenjang }}">
+                                            data-jenjang="{{ $user->jenjang_access }}">
                                             <i class="bi bi-pencil-square"></i>
                                         </button>
 
@@ -263,9 +267,8 @@
                         <label class="form-label">Email</label>
                         <input type="email" name="email" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" required>
+                    <div class="alert alert-info py-2 small">
+                        <i class="bi bi-info-circle me-1"></i> Password akan di-generate otomatis oleh sistem.
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Role</label>
@@ -276,7 +279,7 @@
                     </div>
                     <div class="mb-3" id="boxJenjangAdd">
                         <label class="form-label">Akses Jenjang</label>
-                        <select name="akses_jenjang" class="form-select">
+                        <select name="jenjang_access" class="form-select">
                             <option value="">Semua</option>
                             @foreach(['PAUD','RA/TK','SDIT','MDU','MTS','MA'] as $j) <option value="{{$j}}">{{$j}}</option> @endforeach
                         </select>
@@ -321,7 +324,7 @@
                     </div>
                     <div class="mb-3" id="boxJenjangEdit">
                         <label class="form-label">Akses Jenjang</label>
-                        <select name="akses_jenjang" id="edit_jenjang" class="form-select">
+                        <select name="jenjang_access" id="edit_jenjang" class="form-select">
                             <option value="">Semua</option>
                             @foreach(['PAUD','RA/TK','SDIT','MDU','MTS','MA'] as $j) <option value="{{$j}}">{{$j}}</option> @endforeach
                         </select>

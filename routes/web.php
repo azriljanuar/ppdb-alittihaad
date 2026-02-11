@@ -76,6 +76,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     // --- KELOLA BROSUR ---
     Route::resource('brosur', BrosurController::class)->except(['create', 'edit', 'update', 'show']);
 
+    // --- GANTI PASSWORD (ADMIN SENDIRI) ---
+    Route::get('/profile/change-password', [UserController::class, 'showChangePasswordForm'])->name('user.change-password');
+    Route::put('/profile/change-password', [UserController::class, 'updateCurrentPassword'])->name('user.update-password');
+
     // --- KELOLA USER & PENDAFTAR ---
     Route::get('/users/cetak-kartu', [UserController::class, 'cetakKartu']);
     Route::post('/users/cetak-kartu-massal', [UserController::class, 'cetakKartuMassal']);

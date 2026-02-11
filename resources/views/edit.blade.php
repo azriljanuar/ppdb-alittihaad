@@ -1,6 +1,13 @@
 @extends('layout_admin')
 
 @section('content')
+@php
+    $isPaud = in_array($pendaftar->jenjang, ['PAUD', 'TK', 'KB', 'RA', 'RA/TK', 'MDU']);
+    $isTk = in_array($pendaftar->jenjang, ['TK', 'RA', 'RA/TK']);
+    $isMdu = ($pendaftar->jenjang == 'MDU');
+    $showSekolahAsal = !$isTk;
+    $showPeriodik = !$isTk && !$isMdu;
+@endphp
 <div class="container-fluid">
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -61,15 +68,70 @@
                             <div class="col-md-4">
                                 <label class="small text-muted fw-bold text-uppercase">Jenjang</label>
                                 <select name="jenjang" class="form-select bg-warning bg-opacity-10">
-                                    @foreach(['PAUD', 'RA/TA', 'SDIT', 'MDU', 'MTS', 'MA'] as $j)
+                                    @foreach(['PAUD', 'TK', 'KB', 'RA', 'RA/TK', 'SDIT', 'MDU', 'MTS', 'MA'] as $j)
                                         <option value="{{ $j }}" {{ $pendaftar->jenjang == $j ? 'selected' : '' }}>{{ $j }}</option>
                                     @endforeach
                                 </select>
                             </div>
+                            
+                            @if($isPaud)
+                            <div class="col-12"><hr class="my-1"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Nama Panggilan</label><input type="text" name="nama_panggilan" class="form-control" value="{{ $pendaftar->nama_panggilan }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Warga Negara</label><input type="text" name="warga_negara" class="form-control" value="{{ $pendaftar->warga_negara }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Agama</label><input type="text" name="agama" class="form-control" value="{{ $pendaftar->agama }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Bahasa Sehari-hari</label><input type="text" name="bahasa_sehari_hari" class="form-control" value="{{ $pendaftar->bahasa_sehari_hari }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Status Anak</label>
+                                <select name="status_anak" class="form-select">
+                                    <option value="">- Pilih -</option>
+                                    <option value="Lengkap" {{ $pendaftar->status_anak == 'Lengkap' ? 'selected' : '' }}>Lengkap</option>
+                                    <option value="Yatim" {{ $pendaftar->status_anak == 'Yatim' ? 'selected' : '' }}>Yatim</option>
+                                    <option value="Piatu" {{ $pendaftar->status_anak == 'Piatu' ? 'selected' : '' }}>Piatu</option>
+                                    <option value="Yatim Piatu" {{ $pendaftar->status_anak == 'Yatim Piatu' ? 'selected' : '' }}>Yatim Piatu</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Berkebutuhan Khusus</label><input type="text" name="berkebutuhan_khusus" class="form-control" value="{{ $pendaftar->berkebutuhan_khusus }}" placeholder="Tidak Ada (jika normal)"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Jml Sdr Kandung</label><input type="number" name="jumlah_saudara_kandung" class="form-control" value="{{ $pendaftar->jumlah_saudara_kandung }}"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Jml Sdr Tiri</label><input type="number" name="jumlah_saudara_tiri" class="form-control" value="{{ $pendaftar->jumlah_saudara_tiri }}"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Jml Sdr Angkat</label><input type="number" name="jumlah_saudara_angkat" class="form-control" value="{{ $pendaftar->jumlah_saudara_angkat }}"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">No Telp Rumah</label><input type="text" name="no_telp_rumah" class="form-control" value="{{ $pendaftar->no_telp_rumah }}"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Status Tpt Tinggal</label><input type="text" name="status_tempat_tinggal" class="form-control" value="{{ $pendaftar->status_tempat_tinggal }}" placeholder="Milik Sendiri/Sewa"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Moda Transportasi</label><input type="text" name="moda_transportasi" class="form-control" value="{{ $pendaftar->moda_transportasi }}"></div>
+                            
+                            @if($isMdu)
+                            <div class="col-12"><hr class="my-1"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Tinggi Badan (cm)</label><input type="number" step="0.01" name="tinggi_badan" class="form-control" value="{{ $pendaftar->tinggi_badan }}"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Berat Badan (kg)</label><input type="number" step="0.01" name="berat_badan" class="form-control" value="{{ $pendaftar->berat_badan }}"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Lingkar Kepala (cm)</label><input type="number" step="0.01" name="lingkar_kepala" class="form-control" value="{{ $pendaftar->lingkar_kepala }}"></div>
+                            
+                            <div class="col-md-4">
+                                <label class="small text-muted fw-bold text-uppercase">Jarak ke Sekolah</label>
+                                <select name="jarak_ke_sekolah" class="form-select">
+                                    <option value="">- Pilih -</option>
+                                    <option value="Kurang dari 1 km" {{ $pendaftar->jarak_ke_sekolah == 'Kurang dari 1 km' ? 'selected' : '' }}>Kurang dari 1 km</option>
+                                    <option value="Lebih dari 1 km" {{ $pendaftar->jarak_ke_sekolah == 'Lebih dari 1 km' ? 'selected' : '' }}>Lebih dari 1 km</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Jarak (km) > 1km</label><input type="number" step="0.01" name="jarak_ke_sekolah_km" class="form-control" value="{{ $pendaftar->jarak_ke_sekolah_km }}"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Waktu Tempuh</label><input type="text" name="waktu_tempuh" class="form-control" value="{{ $pendaftar->waktu_tempuh }}"></div>
+
+                            <div class="col-md-4">
+                                <label class="small text-muted fw-bold text-uppercase">Golongan Darah</label>
+                                <select name="golongan_darah" class="form-select">
+                                    <option value="">- Pilih -</option>
+                                    @foreach(['A','B','AB','O'] as $gd)
+                                        <option value="{{ $gd }}" {{ $pendaftar->golongan_darah == $gd ? 'selected' : '' }}>{{ $gd }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-8"><label class="small text-muted fw-bold text-uppercase">Riwayat Penyakit</label><input type="text" name="riwayat_penyakit" class="form-control" value="{{ $pendaftar->riwayat_penyakit }}"></div>
+                            @endif
+
+                            @endif
                         </div>
                     </div>
                 </div>
 
+                @if(!$isTk)
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white py-3 border-bottom border-light">
                         <h6 class="m-0 fw-bold text-success"><i class="bi bi-building me-2"></i> 2. SEKOLAH ASAL</h6>
@@ -96,9 +158,27 @@
                                 <label class="small text-muted fw-bold text-uppercase">Kabupaten</label>
                                 <input type="text" name="kabupaten_sekolah_asal" class="form-control" value="{{ $pendaftar->kabupaten_sekolah_asal }}">
                             </div>
+                            
+                            @if($isMdu)
+                            <div class="col-12"><hr class="my-1"></div>
+                            <div class="col-md-6">
+                                <label class="small text-muted fw-bold text-uppercase">Masuk Sebagai</label>
+                                <select name="status_masuk_sekolah" class="form-select">
+                                    <option value="Siswa Baru" {{ $pendaftar->status_masuk_sekolah == 'Siswa Baru' ? 'selected' : '' }}>Siswa Baru</option>
+                                    <option value="Pindahan" {{ $pendaftar->status_masuk_sekolah == 'Pindahan' ? 'selected' : '' }}>Pindahan</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Pindahan Dari Sekolah</label><input type="text" name="pindahan_dari_sekolah" class="form-control" value="{{ $pendaftar->pindahan_dari_sekolah }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Tanggal Pindah</label><input type="date" name="pindahan_dari_tanggal" class="form-control" value="{{ $pendaftar->pindahan_dari_tanggal }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Dari Kelas</label><input type="text" name="pindahan_dari_kelas" class="form-control" value="{{ $pendaftar->pindahan_dari_kelas }}"></div>
+                            
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Diterima Tanggal</label><input type="date" name="diterima_tanggal" class="form-control" value="{{ $pendaftar->diterima_tanggal }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Diterima Di Kelas</label><input type="text" name="diterima_kelas" class="form-control" value="{{ $pendaftar->diterima_kelas }}"></div>
+                            @endif
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white py-3 border-bottom border-light">
@@ -134,6 +214,7 @@
                                 <label class="small text-muted fw-bold text-uppercase">Kode Pos</label>
                                 <input type="number" name="kode_pos" class="form-control" value="{{ $pendaftar->kode_pos }}">
                             </div>
+                            @if(!$isPaud)
                             <div class="col-md-4">
                                 <label class="small text-muted fw-bold text-uppercase">Jarak Sekolah</label>
                                 <select name="jarak_ke_sekolah" class="form-select">
@@ -146,6 +227,7 @@
                                 <label class="small text-muted fw-bold text-uppercase">Transportasi</label>
                                 <input type="text" name="transportasi" class="form-control" value="{{ $pendaftar->transportasi }}">
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -155,6 +237,46 @@
                         <h6 class="m-0 fw-bold text-warning text-dark"><i class="bi bi-people-fill me-2"></i> 4. DATA ORANG TUA</h6>
                     </div>
                     <div class="card-body">
+                        @if($isPaud)
+                        <div class="row g-3">
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">No. Kartu Keluarga (KK)</label><input type="number" name="no_kk" class="form-control" value="{{ $pendaftar->no_kk }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">No. WA Ortu</label><input type="number" name="no_wa" class="form-control" value="{{ $pendaftar->no_wa }}"></div>
+                            
+                            <!-- DATA AYAH -->
+                            <div class="col-12"><h6 class="fw-bold text-success mt-3 border-bottom pb-2">A. DATA AYAH KANDUNG</h6></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Nama Lengkap Ayah</label><input type="text" name="nama_ayah" class="form-control" value="{{ $pendaftar->nama_ayah }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">NIK Ayah</label><input type="number" name="nik_ayah" class="form-control" value="{{ $pendaftar->nik_ayah }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Tempat Lahir</label><input type="text" name="tempat_lahir_ayah" class="form-control" value="{{ $pendaftar->tempat_lahir_ayah }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Tanggal Lahir</label><input type="date" name="tgl_lahir_ayah" class="form-control" value="{{ $pendaftar->tgl_lahir_ayah }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Agama</label><input type="text" name="agama_ayah" class="form-control" value="{{ $pendaftar->agama_ayah }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Warga Negara</label><input type="text" name="warga_negara_ayah" class="form-control" value="{{ $pendaftar->warga_negara_ayah }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Pendidikan Terakhir</label><input type="text" name="pendidikan_ayah" class="form-control" value="{{ $pendaftar->pendidikan_ayah }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Pekerjaan</label><input type="text" name="pekerjaan_ayah" class="form-control" value="{{ $pendaftar->pekerjaan_ayah }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Penghasilan Bulanan</label><input type="text" name="penghasilan_ayah" class="form-control" value="{{ $pendaftar->penghasilan_ayah }}"></div>
+                            <div class="col-md-12"><label class="small text-muted fw-bold text-uppercase">Alamat Rumah</label><input type="text" name="alamat_rumah_ayah" class="form-control" value="{{ $pendaftar->alamat_rumah_ayah }}"></div>
+                            <div class="col-md-12"><label class="small text-muted fw-bold text-uppercase">Alamat Kantor (jika ada)</label><input type="text" name="alamat_kantor_ibu" class="form-control" value="{{ $pendaftar->alamat_kantor_ibu }}"></div>
+                            
+                            @if($isMdu)
+                            <!-- DATA WALI -->
+                            <div class="col-12"><h6 class="fw-bold text-success mt-3 border-bottom pb-2">C. DATA WALI (Jika ada)</h6></div>
+                            <div class="col-md-12"><label class="small text-muted fw-bold text-uppercase">Nama Wali</label><input type="text" name="nama_wali" class="form-control" value="{{ $pendaftar->nama_wali }}"></div>
+                            @endif
+
+                            <!-- DATA IBU -->
+                            <div class="col-12"><h6 class="fw-bold text-success mt-3 border-bottom pb-2">B. DATA IBU KANDUNG</h6></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Nama Lengkap Ibu</label><input type="text" name="nama_ibu" class="form-control" value="{{ $pendaftar->nama_ibu }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">NIK Ibu</label><input type="number" name="nik_ibu" class="form-control" value="{{ $pendaftar->nik_ibu }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Tempat Lahir</label><input type="text" name="tempat_lahir_ibu" class="form-control" value="{{ $pendaftar->tempat_lahir_ibu }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Tanggal Lahir</label><input type="date" name="tgl_lahir_ibu" class="form-control" value="{{ $pendaftar->tgl_lahir_ibu }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Agama</label><input type="text" name="agama_ibu" class="form-control" value="{{ $pendaftar->agama_ibu }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Warga Negara</label><input type="text" name="warga_negara_ibu" class="form-control" value="{{ $pendaftar->warga_negara_ibu }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Pendidikan Terakhir</label><input type="text" name="pendidikan_ibu" class="form-control" value="{{ $pendaftar->pendidikan_ibu }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Pekerjaan</label><input type="text" name="pekerjaan_ibu" class="form-control" value="{{ $pendaftar->pekerjaan_ibu }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Penghasilan Bulanan</label><input type="text" name="penghasilan_ibu" class="form-control" value="{{ $pendaftar->penghasilan_ibu }}"></div>
+                            <div class="col-md-12"><label class="small text-muted fw-bold text-uppercase">Alamat Rumah</label><input type="text" name="alamat_rumah_ibu" class="form-control" value="{{ $pendaftar->alamat_rumah_ibu }}"></div>
+                            <div class="col-md-12"><label class="small text-muted fw-bold text-uppercase">Alamat Kantor (jika ada)</label><input type="text" name="alamat_kantor_ibu" class="form-control" value="{{ $pendaftar->alamat_kantor_ibu }}"></div>
+                        </div>
+                        @else
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="small text-muted fw-bold text-uppercase">Nomor KK</label>
@@ -203,8 +325,34 @@
                                 <input type="text" name="pekerjaan_ibu" class="form-control" placeholder="Pekerjaan Ibu" value="{{ $pendaftar->pekerjaan_ibu }}">
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
+
+                @if($showPeriodik && $isPaud)
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3 border-bottom border-light">
+                        <h6 class="m-0 fw-bold text-danger"><i class="bi bi-graph-up me-2"></i> 5. DATA PERIODIK</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Tinggi Badan (cm)</label><input type="number" step="0.01" name="tinggi_badan" class="form-control" value="{{ $pendaftar->tinggi_badan }}"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Berat Badan (kg)</label><input type="number" step="0.01" name="berat_badan" class="form-control" value="{{ $pendaftar->berat_badan }}"></div>
+                            <div class="col-md-4"><label class="small text-muted fw-bold text-uppercase">Lingkar Kepala (cm)</label><input type="number" step="0.01" name="lingkar_kepala" class="form-control" value="{{ $pendaftar->lingkar_kepala }}"></div>
+                            
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Jarak ke Sekolah</label>
+                                <select name="jarak_ke_sekolah" class="form-select">
+                                    <option value="">- Pilih -</option>
+                                    <option value="Kurang dari 1 km" {{ $pendaftar->jarak_ke_sekolah == 'Kurang dari 1 km' ? 'selected' : '' }}>Kurang dari 1 km</option>
+                                    <option value="Lebih dari 1 km" {{ $pendaftar->jarak_ke_sekolah == 'Lebih dari 1 km' ? 'selected' : '' }}>Lebih dari 1 km</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Jarak (km) > 1km</label><input type="number" step="0.01" name="jarak_ke_sekolah_km" class="form-control" value="{{ $pendaftar->jarak_ke_sekolah_km }}"></div>
+                            <div class="col-md-6"><label class="small text-muted fw-bold text-uppercase">Waktu Tempuh</label><input type="text" name="waktu_tempuh" class="form-control" value="{{ $pendaftar->waktu_tempuh }}"></div>
+                        </div>
+                    </div>
+                </div>
+                @endif
 
             </div>
 

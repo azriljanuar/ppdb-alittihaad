@@ -312,6 +312,13 @@
                             @php
                                 $dataJenjang = isset($biayaItems) ? $biayaItems->where('jenjang', $j) : collect([]);
                                 $otherInfos = $infos->where('jenjang', $j);
+                                
+                                // KHUSUS SDIT: Hapus informasi biaya (Request User)
+                                if($j == 'SDIT') {
+                                    $dataJenjang = collect([]);
+                                    $otherInfos = $otherInfos->where('kategori', '!=', 'Biaya');
+                                }
+
                                 $profile = $infos->where('jenjang', $j)->where('kategori', 'Profile')->first();
                             @endphp
 
@@ -363,20 +370,39 @@
                                     <div class="info-card-body">
                                         @foreach($dataJenjang->groupBy('kategori') as $kategori => $items)
                                             @php
+                                                // Tentukan apakah jenjang ini perlu digabung (PAUD, RA/TK, MDU)
+                                                $mergedView = in_array($j, ['PAUD', 'RA/TK', 'MDU']);
+                                                
+                                                // Jika jenjang PAUD/RA/TK/MDU, ubah label 'Asrama/Non Asrama' menjadi lebih umum jika perlu, 
+                                                // atau biarkan judul kategori tapi nanti kolomnya satu saja.
+                                                // User minta: "hilangkan kata kata tentang asrama dan non asrama"
+                                                // Jadi kita bisa ubah label $kategori kalau mengandung kata Asrama
+                                                $displayKategori = $kategori;
+                                                if($mergedView) {
+                                                    $displayKategori = str_replace(['Asrama', 'Non Asrama'], '', $kategori);
+                                                    if(trim($displayKategori) == '') $displayKategori = 'Biaya Pendidikan';
+                                                }
+
                                                 $uniqueNames = $items->pluck('nama_item')->unique();
                                                 $totalPutra = $items->where('gender', 'Putra')->sum('nominal');
                                                 $totalPutri = $items->where('gender', 'Putri')->sum('nominal');
+                                                // Jika merged, kita ambil salah satu saja (misal Putra) sebagai total umum
+                                                $totalUmum = $totalPutra; 
                                             @endphp
 
-                                            <div class="sub-header">Jalur {{ $kategori }}</div>
+                                            <div class="sub-header">{{ $displayKategori }}</div>
                                             
                                             <div class="table-responsive mb-4">
                                                 <table class="table table-custom mb-0">
                                                     <thead>
                                                         <tr>
                                                             <th width="40%">Komponen</th>
-                                                            <th width="30%" class="text-end text-primary">Putra</th>
-                                                            <th width="30%" class="text-end text-danger">Putri</th>
+                                                            @if($mergedView)
+                                                                <th width="60%" class="text-end text-primary">Nominal</th>
+                                                            @else
+                                                                <th width="30%" class="text-end text-primary">Putra</th>
+                                                                <th width="30%" class="text-end text-danger">Putri</th>
+                                                            @endif
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -387,16 +413,25 @@
                                                             @endphp
                                                             <tr>
                                                                 <td class="text-secondary fst-italic">{{ $namaItem }}</td>
-                                                                <td class="text-end fw-bold text-dark">{{ $valPutra > 0 ? number_format($valPutra,0,',','.') : '-' }}</td>
-                                                                <td class="text-end fw-bold text-dark">{{ $valPutri > 0 ? number_format($valPutri,0,',','.') : '-' }}</td>
+                                                                @if($mergedView)
+                                                                    {{-- Tampilkan satu kolom saja (ambil nilai Putra asumsi sama) --}}
+                                                                    <td class="text-end fw-bold text-dark">{{ $valPutra > 0 ? number_format($valPutra,0,',','.') : '-' }}</td>
+                                                                @else
+                                                                    <td class="text-end fw-bold text-dark">{{ $valPutra > 0 ? number_format($valPutra,0,',','.') : '-' }}</td>
+                                                                    <td class="text-end fw-bold text-dark">{{ $valPutri > 0 ? number_format($valPutri,0,',','.') : '-' }}</td>
+                                                                @endif
                                                             </tr>
                                                         @endforeach
                                                     </tbody>
                                                     <tfoot class="bg-light">
                                                         <tr>
                                                             <td class="fw-bold text-success text-uppercase ps-2">TOTAL</td>
-                                                            <td class="text-end fw-bold text-success fs-6">Rp {{ number_format($totalPutra,0,',','.') }}</td>
-                                                            <td class="text-end fw-bold text-success fs-6">Rp {{ number_format($totalPutri,0,',','.') }}</td>
+                                                            @if($mergedView)
+                                                                <td class="text-end fw-bold text-success fs-6">Rp {{ number_format($totalUmum,0,',','.') }}</td>
+                                                            @else
+                                                                <td class="text-end fw-bold text-success fs-6">Rp {{ number_format($totalPutra,0,',','.') }}</td>
+                                                                <td class="text-end fw-bold text-success fs-6">Rp {{ number_format($totalPutri,0,',','.') }}</td>
+                                                            @endif
                                                         </tr>
                                                     </tfoot>
                                                 </table>

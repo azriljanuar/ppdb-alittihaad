@@ -22,9 +22,26 @@ class BiayaController extends Controller
 
         // Tentukan jenjang yang sedang diedit (datang dari tombol pada Info per jenjang)
         $selectedJenjang = $request->query('jenjang');
+
+        // PROTEKSI KHUSUS: SDIT tidak boleh edit biaya
+        if ($selectedJenjang == 'SDIT') {
+            return redirect()->route('infos.index')->with('error', 'Fitur edit biaya untuk SDIT dinonaktifkan.');
+        }
+
         if (!$selectedJenjang) {
             // Fallback: gunakan akses jenjang admin jika bukan superadmin
             $selectedJenjang = $user->role == 'superadmin' ? ($allowed_jenjangs[0] ?? null) : $user->jenjang_access;
+            
+            // Jika fallback kena SDIT, cari yang lain
+            if ($selectedJenjang == 'SDIT' && $user->role == 'superadmin') {
+                 // Cari jenjang pertama yang bukan SDIT
+                 foreach ($allowed_jenjangs as $j) {
+                     if ($j != 'SDIT') {
+                         $selectedJenjang = $j;
+                         break;
+                     }
+                 }
+            }
         }
 
         // Ambil data biaya

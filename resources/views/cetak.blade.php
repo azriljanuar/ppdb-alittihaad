@@ -67,6 +67,12 @@
             <tr><td class="label">Tempat, Tgl Lahir</td><td class="separator">:</td><td>{{ $pendaftar->tempat_lahir }}, {{ \Carbon\Carbon::parse($pendaftar->tgl_lahir)->format('d-m-Y') }}</td></tr>
             <tr><td class="label">Anak Ke</td><td class="separator">:</td><td>{{ $pendaftar->anak_ke }} dari {{ $pendaftar->jumlah_saudara }} bersaudara</td></tr>
             <tr><td class="label">Alamat</td><td class="separator">:</td><td>{{ $pendaftar->alamat_jalan }}, RT/RW {{ $pendaftar->rt_rw }}, Desa {{ $pendaftar->desa }}, Kec. {{ $pendaftar->kecamatan }}, {{ $pendaftar->kabupaten }}</td></tr>
+            @if($pendaftar->golongan_darah)
+            <tr><td class="label">Golongan Darah</td><td class="separator">:</td><td>{{ $pendaftar->golongan_darah }}</td></tr>
+            @endif
+            @if($pendaftar->riwayat_penyakit)
+            <tr><td class="label">Riwayat Penyakit</td><td class="separator">:</td><td>{{ $pendaftar->riwayat_penyakit }}</td></tr>
+            @endif
         </table>
 
         <div class="section-title">B. SEKOLAH ASAL</div>
@@ -74,6 +80,12 @@
             <tr><td class="label">Nama Sekolah</td><td class="separator">:</td><td>{{ $pendaftar->asal_sekolah }} ({{ $pendaftar->status_sekolah_asal }})</td></tr>
             <tr><td class="label">NPSN</td><td class="separator">:</td><td>{{ $pendaftar->npsn_sekolah_asal ?? '-' }}</td></tr>
             <tr><td class="label">Lokasi Sekolah</td><td class="separator">:</td><td>{{ $pendaftar->kabupaten_sekolah_asal }}</td></tr>
+            @if($pendaftar->status_masuk_sekolah)
+            <tr><td class="label">Status Masuk</td><td class="separator">:</td><td>{{ $pendaftar->status_masuk_sekolah }}</td></tr>
+            @endif
+            @if($pendaftar->pindahan_dari_sekolah)
+            <tr><td class="label">Pindahan Dari</td><td class="separator">:</td><td>{{ $pendaftar->pindahan_dari_sekolah }}</td></tr>
+            @endif
         </table>
 
         <div class="section-title">C. DATA ORANG TUA</div>
@@ -81,6 +93,9 @@
             <tr><td class="label">Nama Ayah</td><td class="separator">:</td><td>{{ $pendaftar->nama_ayah }}</td></tr>
             <tr><td class="label">Nama Ibu</td><td class="separator">:</td><td>{{ $pendaftar->nama_ibu }}</td></tr>
             <tr><td class="label">No. WhatsApp</td><td class="separator">:</td><td>{{ $pendaftar->no_wa }}</td></tr>
+            @if($pendaftar->nama_wali)
+            <tr><td class="label">Nama Wali</td><td class="separator">:</td><td>{{ $pendaftar->nama_wali }}</td></tr>
+            @endif
         </table>
 
         <div class="footer">
