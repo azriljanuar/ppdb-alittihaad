@@ -24,15 +24,12 @@
             <div class="bg-white p-3 rounded border">
                 <div class="mb-2">
                     <small class="text-muted text-uppercase fw-bold">Username</small>
-                    <div class="fs-5 fw-bold text-primary">{{ $no_daftar }}</div>
                     <div class="fs-4 fw-bold text-primary">{{ $no_daftar }}</div>
                 </div>
                 <div>
                     <small class="text-muted text-uppercase fw-bold">Password</small>
                     <div class="fs-4 fw-bold text-danger">{{ $password_acak }}</div>
                 </div>
-            </div>
-        </div>
             </div>
         </div>
 
