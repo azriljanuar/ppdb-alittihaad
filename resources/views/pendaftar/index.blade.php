@@ -56,13 +56,36 @@
         </div>
         
         <div class="card-body p-0">
+            <form action="{{ route('pendaftar.bulk_update') }}" method="POST" id="bulkForm">
+            @csrf
+            
+            <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
+                <div class="form-check ms-2">
+                    <input class="form-check-input" type="checkbox" id="checkAll">
+                    <label class="form-check-label fw-bold text-muted small" for="checkAll">Pilih Semua</label>
+                </div>
+                <div>
+                    <button type="submit" name="status" value="Diterima" class="btn btn-success btn-sm fw-bold shadow-sm" onclick="return confirm('Yakin TERIMA data yang dipilih?')">
+                        <i class="bi bi-check-lg me-1"></i> Terima
+                    </button>
+                    <button type="submit" name="status" value="Ditolak" class="btn btn-danger btn-sm fw-bold shadow-sm ms-1" onclick="return confirm('Yakin TOLAK data yang dipilih?')">
+                        <i class="bi bi-x-lg me-1"></i> Tolak
+                    </button>
+                    <button type="submit" name="status" value="Proses Seleksi" class="btn btn-secondary btn-sm fw-bold shadow-sm ms-1" onclick="return confirm('Reset status data yang dipilih?')">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                    </button>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light text-secondary">
                         <tr>
-                            <th class="ps-4">No</th>
+                            <th class="ps-4" style="width: 10px;">#</th>
+                            <th>No</th>
                             <th>Nama Lengkap</th>
                             <th>Jenjang</th>
+                            <th>Status</th>
                             <th>Asal Sekolah</th>
                             <th>Berkas Upload</th> <th class="text-center">Aksi</th>
                         </tr>
@@ -70,12 +93,24 @@
                     <tbody>
                         @forelse($pendaftars as $index => $p)
                         <tr>
-                            <td class="ps-4">{{ $index + $pendaftars->firstItem() }}</td>
+                            <td class="ps-4">
+                                <input class="form-check-input checkItem" type="checkbox" name="ids[]" value="{{ $p->id }}">
+                            </td>
+                            <td>{{ $index + $pendaftars->firstItem() }}</td>
                             <td class="fw-bold text-dark">
                                 {{ $p->nama_lengkap }} <br> 
                                 <small class="text-muted fw-normal">{{ $p->no_daftar }}</small>
                             </td>
                             <td><span class="badge bg-info text-dark bg-opacity-10 border border-info">{{ $p->jenjang }}</span></td>
+                            <td>
+                                @if($p->status_lulus == 'Diterima')
+                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Diterima</span>
+                                @elseif($p->status_lulus == 'Ditolak')
+                                    <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i> Ditolak</span>
+                                @else
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i> Proses</span>
+                                @endif
+                            </td>
                             <td>{{ Str::limit($p->asal_sekolah, 20) }}</td>
                             
                             {{-- LOGIKA DOWNLOAD BERKAS (DROPDOWN) --}}
@@ -150,7 +185,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">
+                            <td colspan="8" class="text-center py-5 text-muted">
                                 <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
                                 <p class="mb-0 fw-bold">Tidak ada data ditemukan.</p>
                             </td>
@@ -159,6 +194,7 @@
                     </tbody>
                 </table>
             </div>
+            </form>
 
             <div class="px-4 py-3 border-top">
                 {{ $pendaftars->appends(request()->all())->links() }}
@@ -166,4 +202,15 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.getElementById('checkAll').addEventListener('change', function() {
+        var checkboxes = document.querySelectorAll('.checkItem');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    });
+</script>
 @endsection

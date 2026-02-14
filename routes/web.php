@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\BrosurController;
+use App\Http\Controllers\WebsiteSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,10 +88,15 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::put('/users/siswa/{id}', [UserController::class, 'updateAkunSiswa']); // Update password siswa
 
     // Hapus 'index' dari except, karena sekarang kita butuh halaman index-nya
+    Route::post('/pendaftar/bulk-update', [PendaftarController::class, 'bulkUpdate'])->name('pendaftar.bulk_update');
     Route::resource('pendaftar', PendaftarController::class)->except(['store']);
     Route::get('/cetak/{id}', [PendaftarController::class, 'cetak']);
     Route::get('/pendaftar/{id}/delete', [PendaftarController::class, 'destroy']);
     Route::get('/admin/download/{id}/{jenis}', [PendaftarController::class, 'download']);
+
+    // --- PENGATURAN WEBSITE (Superadmin) ---
+    Route::get('/settings', [WebsiteSettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [WebsiteSettingController::class, 'update'])->name('settings.update');
 
     // --- DARURAT: PERBAIKAN DATABASE (Opsional, boleh dihapus nanti) ---
     Route::get('/perbaiki-database-null', function () {

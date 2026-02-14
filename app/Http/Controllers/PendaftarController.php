@@ -455,6 +455,38 @@ class PendaftarController extends Controller
         return redirect()->route('pendaftar.index')->with('success', 'Data berhasil diperbarui!');
     }
 
+    // UPDATE STATUS MASSAL
+    public function bulkUpdate(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:pendaftars,id',
+            'status' => 'required|in:Diterima,Ditolak,Proses Seleksi',
+        ]);
+
+        $ids = $request->ids;
+        $status = $request->status;
+
+        $user = Auth::user();
+        
+        // Filter IDs based on permission (unless superadmin)
+        if ($user->role != 'superadmin') {
+            $allowedIds = Pendaftar::whereIn('id', $ids)
+                                    ->where('jenjang', $user->jenjang_access)
+                                    ->pluck('id')
+                                    ->toArray();
+            $ids = $allowedIds;
+        }
+
+        if (empty($ids)) {
+            return back()->with('error', 'Tidak ada data yang dipilih atau Anda tidak memiliki akses.');
+        }
+
+        Pendaftar::whereIn('id', $ids)->update(['status_lulus' => $status]);
+
+        return back()->with('success', 'Status berhasil diperbarui untuk ' . count($ids) . ' data.');
+    }
+
     // HAPUS DATA
     public function destroy($id)
     {

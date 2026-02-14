@@ -1,10 +1,28 @@
+@php
+    $setting = \App\Models\WebsiteSetting::first();
+    // Fallback jika database kosong (safety net)
+    if(!$setting) {
+        $setting = new \App\Models\WebsiteSetting([
+            'site_title' => 'PPDB Al-Ittihaad - Generasi Qurani',
+            'hero_title' => 'Membangun Generasi',
+            'hero_title_highlight' => 'Qurani & Berprestasi',
+            'hero_description' => 'Bergabunglah bersama kami di Al-Ittihaad. Kurikulum terpadu berbasis Al-Qur\'an dan Sains untuk masa depan gemilang buah hati Anda.',
+            'hero_badge' => 'Pendaftaran 2025/2026 Dibuka',
+            'hero_image' => 'https://img.freepik.com/free-photo/group-diverse-grads-throwing-caps-up-sky_53876-56031.jpg'
+        ]);
+    }
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PPDB Al-Ittihaad - Generasi Qurani</title>
+    <title>{{ $setting->site_title ?? 'PPDB Al-Ittihaad - Generasi Qurani' }}</title>
+    
+    @if($setting->site_icon)
+        <link rel="icon" href="{{ asset($setting->site_icon) }}">
+    @endif
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -34,7 +52,7 @@
             padding: 1rem 0;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
-        .navbar-brand img { height: 45px; }
+        .navbar-brand img { height: 50px; }
         .nav-link {
             color: var(--primary-dark) !important;
             font-weight: 700;
@@ -187,9 +205,11 @@
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
         <div class="container">
             <a class="navbar-brand" href="#">
-    {{-- GANTI 'assets/logo.svg' DENGAN LOKASI FILE LOGO ANDA --}}
-    <img src="{{ asset('assets/images/logo-ppdb.svg') }}" alt="Logo PPDB" height="50">
-</a>
+                @php
+                    $logoSrc = $setting->site_logo ? asset($setting->site_logo) : asset('assets/images/logo-ppdb.svg');
+                @endphp
+                <img src="{{ $logoSrc }}" alt="Logo PPDB" height="50">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -232,18 +252,22 @@
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="badge bg-white text-success px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm">
-                        <i class="bi bi-stars me-1"></i> Pendaftaran 2025/2026 Dibuka
+                        <i class="bi bi-stars me-1"></i> {{ $setting->hero_badge ?? 'Pendaftaran 2025/2026 Dibuka' }}
                     </div>
-                    <h1 class="hero-title">Membangun Generasi <br><span style="color: var(--btn-color);">Qurani & Berprestasi</span></h1>
+                    <h1 class="hero-title">{{ $setting->hero_title ?? 'Membangun Generasi' }} <br><span style="color: var(--btn-color);">{{ $setting->hero_title_highlight ?? 'Qurani & Berprestasi' }}</span></h1>
                     <p class="hero-subtitle">
-                        Bergabunglah bersama kami di Al-Ittihaad. Kurikulum terpadu berbasis Al-Qur'an dan Sains untuk masa depan gemilang buah hati Anda.
+                        {{ $setting->hero_description ?? 'Bergabunglah bersama kami di Al-Ittihaad. Kurikulum terpadu berbasis Al-Qur\'an dan Sains untuk masa depan gemilang buah hati Anda.' }}
                     </p>
                     <a href="{{ url('/daftar') }}" class="btn btn-hero-primary shadow-lg">
                         Daftar Sekarang <i class="bi bi-arrow-right ms-2"></i>
                     </a>
                 </div>
                 <div class="col-lg-6 text-center d-none d-lg-block">
-                    <img src="https://img.freepik.com/free-photo/group-diverse-grads-throwing-caps-up-sky_53876-56031.jpg" 
+                    @php
+                        $heroImg = $setting->hero_image ?? 'https://img.freepik.com/free-photo/group-diverse-grads-throwing-caps-up-sky_53876-56031.jpg';
+                        $heroImgSrc = Str::startsWith($heroImg, 'http') ? $heroImg : asset($heroImg);
+                    @endphp
+                    <img src="{{ $heroImgSrc }}" 
                         alt="Siswa" class="img-fluid rounded-4 shadow-lg" style="transform: rotate(2deg); border: 5px solid rgba(255,255,255,0.2); width: 85%;">
                 </div>
             </div>
@@ -257,8 +281,8 @@
                     <div class="icon-box bg-danger bg-opacity-10 text-danger mx-auto">
                         <i class="bi bi-book-half"></i>
                     </div>
-                    <h5 class="fw-bold">Kurikulum Terpadu</h5>
-                    <p class="text-muted small">Memadukan kurikulum nasional dan kepesantrenan.</p>
+                    <h5 class="fw-bold">{{ $setting->feature1_title ?? 'Kurikulum Terpadu' }}</h5>
+                    <p class="text-muted small">{{ $setting->feature1_desc ?? 'Memadukan kurikulum nasional dan kepesantrenan.' }}</p>
                 </div>
             </div>
             <div class="col-md-4">
@@ -266,8 +290,8 @@
                     <div class="icon-box bg-warning bg-opacity-10 text-warning mx-auto">
                         <i class="bi bi-trophy-fill"></i>
                     </div>
-                    <h5 class="fw-bold">Prestasi Santri</h5>
-                    <p class="text-muted small">Mencetak juara di tingkat regional hingga nasional.</p>
+                    <h5 class="fw-bold">{{ $setting->feature2_title ?? 'Prestasi Santri' }}</h5>
+                    <p class="text-muted small">{{ $setting->feature2_desc ?? 'Mencetak juara di tingkat regional hingga nasional.' }}</p>
                 </div>
             </div>
             <div class="col-md-4">
@@ -275,8 +299,8 @@
                     <div class="icon-box bg-success bg-opacity-10 text-success mx-auto">
                         <i class="bi bi-heart-fill"></i>
                     </div>
-                    <h5 class="fw-bold">Lingkungan Islami</h5>
-                    <p class="text-muted small">Pembiasaan akhlak mulia dan ibadah sehari-hari.</p>
+                    <h5 class="fw-bold">{{ $setting->feature3_title ?? 'Lingkungan Islami' }}</h5>
+                    <p class="text-muted small">{{ $setting->feature3_desc ?? 'Pembiasaan akhlak mulia dan ibadah sehari-hari.' }}</p>
                 </div>
             </div>
         </div>

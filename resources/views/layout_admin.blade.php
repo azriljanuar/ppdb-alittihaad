@@ -123,6 +123,9 @@
             <a href="{{ url('/users') }}" class="list-group-item {{ Request::is('users*') ? 'active' : '' }}">
                 <i class="bi bi-people"></i> Kelola User
             </a>
+            <a href="{{ route('settings.index') }}" class="list-group-item {{ Request::is('settings*') ? 'active' : '' }}">
+                <i class="bi bi-gear-fill"></i> Pengaturan Website
+            </a>
             @endif
 
             <a href="{{ url('/infos') }}" class="list-group-item {{ Request::is('infos*') ? 'active' : '' }}">
@@ -186,6 +189,8 @@
         $("#wrapper").toggleClass("toggled");
     });
 </script>
+
+@yield('scripts')
 
 </body>
 </html>
