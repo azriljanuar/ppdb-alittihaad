@@ -334,7 +334,10 @@
                                             <div class="carousel-inner rounded-4 shadow-sm overflow-hidden">
                                                 @foreach($profile->images as $k => $img)
                                                     <div class="carousel-item {{ $k==0?'active':'' }}">
-                                                        <img src="{{ asset('storage/' . $img) }}" class="d-block w-100" style="height: 400px; object-fit: cover;" alt="Foto {{ $j }}">
+                                                        @php
+                                                            $imgSrc = Str::startsWith($img, 'uploads/') ? asset($img) : asset('storage/' . $img);
+                                                        @endphp
+                                                        <img src="{{ $imgSrc }}" class="d-block w-100" style="height: 400px; object-fit: cover;" alt="Foto {{ $j }}">
                                                     </div>
                                                 @endforeach
                                             </div>

@@ -219,8 +219,13 @@ class InfoController extends Controller
             // Upload gambar baru
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $file) {
-                    $path = $file->store('jenjang_images', 'public');
-                    $currentImages[] = $path;
+                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $destinationPath = public_path('uploads/jenjang_images');
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+                    $file->move($destinationPath, $filename);
+                    $currentImages[] = 'uploads/jenjang_images/' . $filename;
                 }
             }
 

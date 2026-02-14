@@ -373,10 +373,20 @@
                 imgContainer.empty();
                 
                 if(Array.isArray(images) && images.length > 0) {
+                    var baseUrl = "{{ asset('/') }}";
+                    var storageUrl = "{{ asset('storage') }}";
+
                     images.forEach(function(img) {
+                        var src = "";
+                        if (img.indexOf('uploads/') === 0) {
+                            src = baseUrl + img;
+                        } else {
+                            src = storageUrl + '/' + img;
+                        }
+
                         var html = `
                             <div class="col-4 col-sm-3 position-relative">
-                                <img src="{{ asset('storage/') }}/${img}" class="img-thumbnail w-100" style="height: 80px; object-fit: cover;">
+                                <img src="${src}" class="img-thumbnail w-100" style="height: 80px; object-fit: cover;">
                                 <div class="form-check position-absolute top-0 start-0 m-1 bg-white rounded p-1 shadow-sm">
                                     <input class="form-check-input" type="checkbox" name="delete_images[]" value="${img}">
                                     <label class="form-check-label small text-danger fw-bold">Hapus</label>
