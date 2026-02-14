@@ -37,46 +37,46 @@
     <div class="container pb-5">
         @php
             $jenjang = $siswa->jenjang;
-            $isPaud = in_array($jenjang, ['PAUD', 'TK', 'KB', 'RA', 'RA/TK', 'MDU']);
+            $isPaud = in_array($jenjang, ['PAUD', 'TK', 'KB', 'RA', 'RA/TK', 'MDU', 'SDIT']);
             $isTk = in_array($jenjang, ['TK', 'RA', 'RA/TK']);
             $isMdu = ($jenjang == 'MDU');
-            $showSekolahAsal = !$isTk; // Hide Sekolah Asal for TK/RA, Show for MDU
-            $showPeriodik = !$isTk && !$isMdu; // Hide Data Periodik tab for TK/RA and MDU (MDU moved to Data Diri)
+            $isSdit = ($jenjang == 'SDIT');
+            $isMts = ($jenjang == 'MTS');
+            $isMa = ($jenjang == 'MA');
+            $isMtsOrMa = ($isMts || $isMa); // Grouping MTS/MA
+            $showSekolahAsal = !$isTk; 
+            $showPeriodik = !$isTk && !$isMdu && !$isSdit && !$isMtsOrMa;
+            $showPrestasi = $isMtsOrMa; // Show Prestasi tab for MTS & MA
 
             // Navigation Logic
             $renderPeriodik = $showPeriodik && $isPaud;
             
             // Nav 1 (Data Diri) Next
-            // MDU: -> Alamat (#pills-3)
-            // TK: -> Orang Tua (#pills-4)
-            // Std: -> Sekolah Asal (#pills-2)
+            // MTS: -> Sekolah Asal (#pills-2)
             $nav_1_next = $isMdu ? '#pills-3' : ($isTk ? '#pills-4' : '#pills-2');
 
             // Nav 2 (Sekolah Asal)
-            // MDU: Prev -> Orang Tua (#pills-4), Next -> Berkas (#pills-5)
-            // Std: Prev -> Data Diri (#pills-1), Next -> Alamat (#pills-3)
+            // MTS: Prev -> Data Diri (#pills-1), Next -> Alamat (#pills-3)
             $nav_2_prev = $isMdu ? '#pills-4' : '#pills-1';
             $nav_2_next = $isMdu ? '#pills-5' : '#pills-3';
 
             // Nav 3 (Alamat)
-            // MDU: Prev -> Data Diri (#pills-1), Next -> Orang Tua (#pills-4)
-            // TK: Prev -> Orang Tua (#pills-4), Next -> Berkas (#pills-5)
-            // Std: Prev -> Sekolah Asal (#pills-2), Next -> Orang Tua (#pills-4)
+            // MTS: Prev -> Sekolah Asal (#pills-2), Next -> Orang Tua (#pills-4)
             $nav_3_prev = $isMdu ? '#pills-1' : ($isTk ? '#pills-4' : '#pills-2');
             $nav_3_next = $isMdu ? '#pills-4' : ($isTk ? '#pills-5' : '#pills-4');
 
             // Nav 4 (Orang Tua)
-            // MDU: Prev -> Alamat (#pills-3), Next -> Sekolah Asal (#pills-2)
-            // TK: Prev -> Data Diri (#pills-1), Next -> Alamat (#pills-3)
-            // Std: Prev -> Alamat (#pills-3), Next -> Periodik (#pills-periodik) or Berkas (#pills-5)
+            // MTS: Prev -> Alamat (#pills-3), Next -> Prestasi (#pills-prestasi)
             $nav_4_prev = $isMdu ? '#pills-3' : ($isTk ? '#pills-1' : '#pills-3');
-            $nav_4_next = $isMdu ? '#pills-2' : ($isTk ? '#pills-3' : ($renderPeriodik ? '#pills-periodik' : '#pills-5'));
+            $nav_4_next = $isMdu ? '#pills-2' : ($isTk ? '#pills-3' : ($renderPeriodik ? '#pills-periodik' : ($showPrestasi ? '#pills-prestasi' : '#pills-5')));
             
+            // Nav Prestasi (New)
+            $nav_prestasi_prev = '#pills-4';
+            $nav_prestasi_next = '#pills-5';
+
             // Nav 5 (Berkas)
-            // MDU: Prev -> Sekolah Asal (#pills-2)
-            // TK: Prev -> Alamat (#pills-3)
-            // Std: Prev -> Periodik or Orang Tua
-            $nav_5_prev = $isMdu ? '#pills-2' : ($renderPeriodik ? '#pills-periodik' : ($isTk ? '#pills-3' : '#pills-4'));
+            // MTS: Prev -> Prestasi (#pills-prestasi)
+            $nav_5_prev = $isMdu ? '#pills-2' : ($renderPeriodik ? '#pills-periodik' : ($isTk ? '#pills-3' : ($showPrestasi ? '#pills-prestasi' : '#pills-4')));
         @endphp
         
         <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -133,7 +133,11 @@
             <li class="nav-item" role="presentation"><button class="nav-link" id="pills-periodik-tab" data-bs-toggle="pill" data-bs-target="#pills-periodik" type="button"><i class="bi bi-graph-up me-2"></i> 5. Data Periodik</button></li>
             @endif
 
-            <li class="nav-item" role="presentation"><button class="nav-link" id="pills-5-tab" data-bs-toggle="pill" data-bs-target="#pills-5" type="button"><i class="bi bi-cloud-arrow-up me-2"></i> {{ ($isMdu) ? '5. Berkas' : (($isTk || !$showSekolahAsal) ? '4. Berkas' : ($showPeriodik ? '6. Berkas' : '5. Berkas')) }}</button></li>
+            @if($showPrestasi)
+            <li class="nav-item" role="presentation"><button class="nav-link" id="pills-prestasi-tab" data-bs-toggle="pill" data-bs-target="#pills-prestasi" type="button"><i class="bi bi-trophy me-2"></i> 5. Prestasi</button></li>
+            @endif
+
+            <li class="nav-item" role="presentation"><button class="nav-link" id="pills-5-tab" data-bs-toggle="pill" data-bs-target="#pills-5" type="button"><i class="bi bi-cloud-arrow-up me-2"></i> {{ ($isMdu) ? '5. Berkas' : (($isTk || !$showSekolahAsal) ? '4. Berkas' : ($showPeriodik ? '6. Berkas' : ($showPrestasi ? '6. Berkas' : '5. Berkas'))) }}</button></li>
         </ul>
 
         <form action="{{ url('/siswa/update-data') }}" method="POST" enctype="multipart/form-data">
@@ -158,6 +162,18 @@
                             <div class="col-md-3"><label class="form-label">Anak Ke</label><input type="number" name="anak_ke" class="form-control" value="{{ $siswa->anak_ke }}"></div>
                             <div class="col-md-3"><label class="form-label">Dari Bersaudara</label><input type="number" name="jumlah_saudara" class="form-control" value="{{ $siswa->jumlah_saudara }}"></div>
                             
+                            @if($isMa)
+                            <div class="col-md-3"><label class="form-label">Jml Adik</label><input type="number" name="jumlah_adik" class="form-control" value="{{ $siswa->jumlah_adik }}"></div>
+                            <div class="col-md-3"><label class="form-label">Jml Kakak</label><input type="number" name="jumlah_kakak" class="form-control" value="{{ $siswa->jumlah_kakak }}"></div>
+                            @endif
+                            
+                            @if($isMtsOrMa)
+                            <div class="col-md-6"><label class="form-label">Hobi</label><input type="text" name="hobi" class="form-control" value="{{ $siswa->hobi }}"></div>
+                            <div class="col-md-6"><label class="form-label">Cita-cita</label><input type="text" name="cita_cita" class="form-control" value="{{ $siswa->cita_cita }}"></div>
+                            <div class="col-md-4"><label class="form-label">Ranking Sem. Lalu</label><input type="number" name="ranking_semester_lalu" class="form-control" value="{{ $siswa->ranking_semester_lalu }}"></div>
+                            <div class="col-md-4"><label class="form-label">Dari Jumlah Siswa</label><input type="number" name="jumlah_siswa_ranking" class="form-control" value="{{ $siswa->jumlah_siswa_ranking }}"></div>
+                            @endif
+
                             @if($isPaud)
                             <div class="col-12"><hr class="my-2"></div>
                             <div class="col-md-6"><label class="form-label">Nama Panggilan</label><input type="text" name="nama_panggilan" class="form-control" value="{{ $siswa->nama_panggilan }}"></div>
@@ -181,7 +197,7 @@
                             <div class="col-md-4"><label class="form-label">Status Tpt Tinggal</label><input type="text" name="status_tempat_tinggal" class="form-control" value="{{ $siswa->status_tempat_tinggal }}" placeholder="Milik Sendiri/Sewa"></div>
                             <div class="col-md-4"><label class="form-label">Moda Transportasi</label><input type="text" name="moda_transportasi" class="form-control" value="{{ $siswa->moda_transportasi }}"></div>
                             
-                            @if($isMdu)
+                            @if($isMdu || $isSdit)
                             <div class="col-12"><hr class="my-2"><h6 class="text-success fw-bold">Data Fisik & Jarak</h6></div>
                             <div class="col-md-4"><label class="form-label">Tinggi Badan (cm)</label><input type="number" step="0.01" name="tinggi_badan" class="form-control" value="{{ $siswa->tinggi_badan }}"></div>
                             <div class="col-md-4"><label class="form-label">Berat Badan (kg)</label><input type="number" step="0.01" name="berat_badan" class="form-control" value="{{ $siswa->berat_badan }}"></div>
@@ -225,6 +241,26 @@
                         <h5 class="fw-bold text-success border-bottom pb-3 mb-4">Data Sekolah Asal</h5>
                         <div class="alert alert-info small">Jika jenjang PAUD/TK, isi dengan tanda strip ( - ).</div>
                         <div class="row g-3">
+                            @if($isMtsOrMa)
+                            <div class="col-md-6"><label class="form-label">Jenjang Sekolah Asal</label>
+                                <select name="jenjang_sekolah_asal" class="form-select">
+                                    <option value="">- Pilih -</option>
+                                    @if($isMts)
+                                    <option value="SD" {{ $siswa->jenjang_sekolah_asal == 'SD' ? 'selected' : '' }}>SD</option>
+                                    <option value="MI" {{ $siswa->jenjang_sekolah_asal == 'MI' ? 'selected' : '' }}>MI</option>
+                                    <option value="SLB" {{ $siswa->jenjang_sekolah_asal == 'SLB' ? 'selected' : '' }}>SLB</option>
+                                    <option value="Paket A" {{ $siswa->jenjang_sekolah_asal == 'Paket A' ? 'selected' : '' }}>Paket A</option>
+                                    <option value="Ulya" {{ $siswa->jenjang_sekolah_asal == 'Ulya' ? 'selected' : '' }}>Ulya</option>
+                                    @elseif($isMa)
+                                    <option value="SMP" {{ $siswa->jenjang_sekolah_asal == 'SMP' ? 'selected' : '' }}>SMP</option>
+                                    <option value="MTs" {{ $siswa->jenjang_sekolah_asal == 'MTs' ? 'selected' : '' }}>MTs</option>
+                                    <option value="SMP IT" {{ $siswa->jenjang_sekolah_asal == 'SMP IT' ? 'selected' : '' }}>SMP IT</option>
+                                    <option value="Paket B" {{ $siswa->jenjang_sekolah_asal == 'Paket B' ? 'selected' : '' }}>Paket B</option>
+                                    <option value="Wustho" {{ $siswa->jenjang_sekolah_asal == 'Wustho' ? 'selected' : '' }}>Wustho</option>
+                                    @endif
+                                </select>
+                            </div>
+                            @endif
                             <div class="col-md-12"><label class="form-label">Nama Sekolah Asal</label><input type="text" name="asal_sekolah" class="form-control" value="{{ $siswa->asal_sekolah }}"></div>
                             <div class="col-md-6"><label class="form-label">Status</label>
                                 <select name="status_sekolah_asal" class="form-select">
@@ -234,9 +270,28 @@
                             </div>
                             <div class="col-md-6"><label class="form-label">NPSN</label><input type="number" name="npsn_sekolah_asal" class="form-control" value="{{ $siswa->npsn_sekolah_asal }}"></div>
                             <div class="col-md-12"><label class="form-label">Alamat Sekolah (Kabupaten)</label><input type="text" name="kabupaten_sekolah_asal" class="form-control" value="{{ $siswa->kabupaten_sekolah_asal }}"></div>
+
+                            @if($isMtsOrMa)
+                            <div class="col-md-6"><label class="form-label">{{ $isMa ? 'No. SKHUN' : 'NISN' }}</label><input type="text" name="{{ $isMa ? 'no_skhun' : 'nisn' }}" class="form-control" value="{{ $isMa ? $siswa->no_skhun : $siswa->nisn }}"></div>
+                            @endif
                             
-                            @if($isMdu)
+                            @if($isSdit)
+                            <div class="col-md-12"><label class="form-label">No. Ijazah Sebelumnya (TK/RA)</label><input type="text" name="no_ijazah_sebelumnya" class="form-control" value="{{ $siswa->no_ijazah_sebelumnya }}" placeholder="Kosongkan jika tidak ada"></div>
+                            @endif
+
+                            @if($isMdu || $isSdit)
                             <div class="col-12"><hr class="my-2"><h6 class="text-success fw-bold">Asal Mula Anak & Penerimaan</h6></div>
+                            
+                            @if($isSdit)
+                            <div class="col-md-6"><label class="form-label">Asal Anak</label>
+                                <select name="asal_anak" class="form-select">
+                                    <option value="">- Pilih -</option>
+                                    <option value="Rumah Tangga" {{ $siswa->asal_anak == 'Rumah Tangga' ? 'selected' : '' }}>Rumah Tangga</option>
+                                    <option value="Taman Kanak-kanak" {{ $siswa->asal_anak == 'Taman Kanak-kanak' ? 'selected' : '' }}>Taman Kanak-kanak</option>
+                                </select>
+                            </div>
+                            @endif
+
                             <div class="col-md-6"><label class="form-label">Masuk Sebagai</label>
                                 <select name="status_masuk_sekolah" class="form-select">
                                     <option value="Siswa Baru" {{ $siswa->status_masuk_sekolah == 'Siswa Baru' ? 'selected' : '' }}>Siswa Baru</option>
@@ -287,7 +342,7 @@
                 <div class="tab-pane fade" id="pills-4" role="tabpanel">
                     <div class="card card-form p-4">
                         <h5 class="fw-bold text-success border-bottom pb-3 mb-4">Data Orang Tua</h5>
-                        @if($isPaud)
+                        @if($isPaud || $isMtsOrMa)
                         <div class="row g-3">
                             <div class="col-md-6"><label class="form-label">No. Kartu Keluarga (KK)</label><input type="number" name="no_kk" class="form-control" value="{{ $siswa->no_kk }}"></div>
                             <div class="col-md-6"><label class="form-label">No. WA Ortu</label><input type="number" name="no_wa" class="form-control" value="{{ $siswa->no_wa }}"></div>
@@ -320,10 +375,21 @@
                             <div class="col-md-12"><label class="form-label">Alamat Rumah</label><input type="text" name="alamat_rumah_ibu" class="form-control" value="{{ $siswa->alamat_rumah_ibu }}"></div>
                             <div class="col-md-12"><label class="form-label">Alamat Kantor (jika ada)</label><input type="text" name="alamat_kantor_ibu" class="form-control" value="{{ $siswa->alamat_kantor_ibu }}"></div>
                             
-                            @if($isMdu)
+                            @if($isMtsOrMa)
+                            <div class="col-md-12"><label class="form-label fw-bold">Penghasilan Keluarga / Bulan</label><input type="text" name="penghasilan_keluarga" class="form-control" value="{{ $siswa->penghasilan_keluarga }}"></div>
+                            @endif
+
+                            @if($isMdu || $isSdit)
                             <!-- DATA WALI -->
                             <div class="col-12"><h6 class="fw-bold text-success mt-3 border-bottom pb-2">C. DATA WALI (Jika ada)</h6></div>
                             <div class="col-md-12"><label class="form-label">Nama Wali</label><input type="text" name="nama_wali" class="form-control" value="{{ $siswa->nama_wali }}"></div>
+                            
+                            @if($isSdit)
+                            <div class="col-md-6"><label class="form-label">NIK Wali</label><input type="number" name="nik_wali" class="form-control" value="{{ $siswa->nik_wali }}"></div>
+                            <div class="col-md-6"><label class="form-label">Pekerjaan Wali</label><input type="text" name="pekerjaan_wali" class="form-control" value="{{ $siswa->pekerjaan_wali }}"></div>
+                            <div class="col-md-6"><label class="form-label">Penghasilan Wali</label><input type="text" name="penghasilan_wali" class="form-control" value="{{ $siswa->penghasilan_wali }}"></div>
+                            @endif
+                            
                             @endif
                         </div>
                         @else
@@ -378,6 +444,28 @@
                                 <i class="bi bi-save2-fill me-1"></i> Simpan
                             </button>
                             <button type="button" class="btn btn-success px-4" onclick="switchTab('#pills-5')">Lanjut <i class="bi bi-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                @if($showPrestasi)
+                <div class="tab-pane fade" id="pills-prestasi" role="tabpanel">
+                    <div class="card card-form p-4">
+                        <h5 class="fw-bold text-success border-bottom pb-3 mb-4">Data Prestasi</h5>
+                        <div class="alert alert-info small">Isi jika memiliki prestasi (akademik/non-akademik). Kosongkan jika tidak ada.</div>
+                        <div class="row g-3">
+                            <div class="col-md-6"><label class="form-label">Bidang Prestasi</label><input type="text" name="prestasi_bidang" class="form-control" value="{{ $siswa->prestasi_bidang }}" placeholder="Contoh: Matematika, Renang, Tahfidz"></div>
+                            <div class="col-md-6"><label class="form-label">Tingkat Prestasi</label><input type="text" name="prestasi_tingkat" class="form-control" value="{{ $siswa->prestasi_tingkat }}" placeholder="Contoh: Kecamatan, Kabupaten, Nasional"></div>
+                            <div class="col-md-6"><label class="form-label">Peringkat</label><input type="text" name="prestasi_peringkat" class="form-control" value="{{ $siswa->prestasi_peringkat }}" placeholder="Contoh: Juara 1, Harapan 1"></div>
+                            <div class="col-md-6"><label class="form-label">Tahun</label><input type="text" name="prestasi_tahun" class="form-control" value="{{ $siswa->prestasi_tahun }}" placeholder="Contoh: 2024"></div>
+                        </div>
+                        <div class="mt-4 text-end">
+                            <button type="button" class="btn btn-secondary me-2" onclick="switchTab('{{ $nav_prestasi_prev }}')">Kembali</button>
+                            <button type="submit" class="btn btn-primary px-3 me-2">
+                                <i class="bi bi-save2-fill me-1"></i> Simpan
+                            </button>
+                            <button type="button" class="btn btn-success px-4" onclick="switchTab('{{ $nav_prestasi_next }}')">Lanjut <i class="bi bi-arrow-right"></i></button>
                         </div>
                     </div>
                 </div>

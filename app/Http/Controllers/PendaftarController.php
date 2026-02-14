@@ -95,6 +95,7 @@ class PendaftarController extends Controller
         
         $allowed = [
             'nama_lengkap',
+            'password',
             'nik',
             'tempat_lahir',
             'tgl_lahir',
@@ -170,6 +171,31 @@ class PendaftarController extends Controller
             'pindahan_dari_kelas',
             'diterima_tanggal',
             'diterima_kelas',
+
+            // Tambahan Field SDIT
+            'nik_wali',
+            'pekerjaan_wali',
+            'penghasilan_wali',
+            'asal_anak',
+            'no_ijazah_sebelumnya',
+
+            // Tambahan Field MTS
+            'nisn',
+            'hobi',
+            'cita_cita',
+            'jenjang_sekolah_asal',
+            'ranking_semester_lalu',
+            'jumlah_siswa_ranking',
+            'penghasilan_keluarga',
+            'prestasi_bidang',
+            'prestasi_tingkat',
+            'prestasi_peringkat',
+            'prestasi_tahun',
+
+            // Tambahan Field MA
+            'no_skhun',
+            'jumlah_adik',
+            'jumlah_kakak',
         ];
         $data = $request->only($allowed);
 
@@ -303,6 +329,7 @@ class PendaftarController extends Controller
         // Batasi kolom yang boleh diupdate oleh Admin sesuai schema
         $allowedAdmin = [
             'nama_lengkap',
+            'password',
             'nik',
             'tempat_lahir',
             'tgl_lahir',
@@ -380,6 +407,31 @@ class PendaftarController extends Controller
             'pindahan_dari_kelas',
             'diterima_tanggal',
             'diterima_kelas',
+
+            // Tambahan Field SDIT
+            'nik_wali',
+            'pekerjaan_wali',
+            'penghasilan_wali',
+            'asal_anak',
+            'no_ijazah_sebelumnya',
+
+            // Tambahan Field MTS
+            'nisn',
+            'hobi',
+            'cita_cita',
+            'jenjang_sekolah_asal',
+            'ranking_semester_lalu',
+            'jumlah_siswa_ranking',
+            'penghasilan_keluarga',
+            'prestasi_bidang',
+            'prestasi_tingkat',
+            'prestasi_peringkat',
+            'prestasi_tahun',
+
+            // Tambahan Field MA
+            'no_skhun',
+            'jumlah_adik',
+            'jumlah_kakak',
         ];
         $dataToUpdate = $request->only($allowedAdmin);
 

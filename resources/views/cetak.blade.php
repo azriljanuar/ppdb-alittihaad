@@ -80,6 +80,12 @@
             <tr><td class="label">Nama Sekolah</td><td class="separator">:</td><td>{{ $pendaftar->asal_sekolah }} ({{ $pendaftar->status_sekolah_asal }})</td></tr>
             <tr><td class="label">NPSN</td><td class="separator">:</td><td>{{ $pendaftar->npsn_sekolah_asal ?? '-' }}</td></tr>
             <tr><td class="label">Lokasi Sekolah</td><td class="separator">:</td><td>{{ $pendaftar->kabupaten_sekolah_asal }}</td></tr>
+            @if($pendaftar->asal_anak)
+            <tr><td class="label">Asal Anak</td><td class="separator">:</td><td>{{ $pendaftar->asal_anak }}</td></tr>
+            @endif
+            @if($pendaftar->no_ijazah_sebelumnya)
+            <tr><td class="label">No. Ijazah TK/RA</td><td class="separator">:</td><td>{{ $pendaftar->no_ijazah_sebelumnya }}</td></tr>
+            @endif
             @if($pendaftar->status_masuk_sekolah)
             <tr><td class="label">Status Masuk</td><td class="separator">:</td><td>{{ $pendaftar->status_masuk_sekolah }}</td></tr>
             @endif
@@ -95,6 +101,15 @@
             <tr><td class="label">No. WhatsApp</td><td class="separator">:</td><td>{{ $pendaftar->no_wa }}</td></tr>
             @if($pendaftar->nama_wali)
             <tr><td class="label">Nama Wali</td><td class="separator">:</td><td>{{ $pendaftar->nama_wali }}</td></tr>
+            @if($pendaftar->nik_wali)
+            <tr><td class="label">NIK Wali</td><td class="separator">:</td><td>{{ $pendaftar->nik_wali }}</td></tr>
+            @endif
+            @if($pendaftar->pekerjaan_wali)
+            <tr><td class="label">Pekerjaan Wali</td><td class="separator">:</td><td>{{ $pendaftar->pekerjaan_wali }}</td></tr>
+            @endif
+            @if($pendaftar->penghasilan_wali)
+            <tr><td class="label">Penghasilan Wali</td><td class="separator">:</td><td>{{ $pendaftar->penghasilan_wali }}</td></tr>
+            @endif
             @endif
         </table>
 
