@@ -250,8 +250,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="fw-bold small">Upload Gambar Carousel</label>
-                            <input type="file" name="images[]" class="form-control" multiple accept="image/*">
-                            <div class="form-text">Bisa pilih banyak gambar sekaligus.</div>
+                            <input type="file" name="images[]" class="form-control" multiple accept="image/jpeg, image/png, image/gif, image/webp">
+                            <div class="form-text">Format: JPG, PNG, GIF, WEBP. Maks 2MB.</div>
                         </div>
                         <div class="mb-3">
                             <label class="fw-bold small">Gambar Saat Ini (Centang untuk Hapus)</label>

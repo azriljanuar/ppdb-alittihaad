@@ -200,7 +200,7 @@ class InfoController extends Controller
         } elseif ($info->kategori == 'Profile') {
             $request->validate([
                 'deskripsi' => 'nullable|string',
-                'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             ]);
 
             $currentImages = $info->images ?? [];
