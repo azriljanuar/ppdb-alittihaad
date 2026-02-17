@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\BrosurController;
 use App\Http\Controllers\WebsiteSettingController;
+use App\Models\WebsiteSetting;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,11 +26,18 @@ Route::post('/siswa/update-data', [PendaftarController::class, 'updateDataSiswa'
 
 // 1. Halaman Depan (Landing Page)
 Route::get('/', function () {
-    // Mengirim data biaya ke halaman depan agar tabel muncul
     $biayaItems = \App\Models\BiayaItem::all();
     $infos = \App\Models\Info::all();
-    $brosurs = \App\Models\Brosur::latest()->get(); // Tambahan untuk dropdown
-    return view('welcome', compact('infos', 'biayaItems', 'brosurs'));
+    $brosurs = \App\Models\Brosur::latest()->get();
+    $setting = WebsiteSetting::first();
+    if (!$setting) {
+        $setting = WebsiteSetting::create([
+            'site_title' => 'PPDB Al-Ittihaad - Generasi Qurani',
+            'hero_title' => 'Membangun Generasi',
+            'hero_title_highlight' => 'Qurani & Berprestasi',
+        ]);
+    }
+    return view('welcome', compact('infos', 'biayaItems', 'brosurs', 'setting'));
 });
 
 // Download Brosur (Publik)

@@ -1,17 +1,3 @@
-@php
-    $setting = \App\Models\WebsiteSetting::first();
-    // Fallback jika database kosong (safety net)
-    if(!$setting) {
-        $setting = new \App\Models\WebsiteSetting([
-            'site_title' => 'PPDB Al-Ittihaad - Generasi Qurani',
-            'hero_title' => 'Membangun Generasi',
-            'hero_title_highlight' => 'Qurani & Berprestasi',
-            'hero_description' => 'Bergabunglah bersama kami di Al-Ittihaad. Kurikulum terpadu berbasis Al-Qur\'an dan Sains untuk masa depan gemilang buah hati Anda.',
-            'hero_badge' => 'Pendaftaran 2025/2026 Dibuka',
-            'hero_image' => 'https://img.freepik.com/free-photo/group-diverse-grads-throwing-caps-up-sky_53876-56031.jpg'
-        ]);
-    }
-@endphp
 <!DOCTYPE html>
 <html lang="id">
 
@@ -511,9 +497,9 @@
         <div class="container">
             <div class="row gy-4">
                 <div class="col-md-5">
-                    <h4 class="fw-bold mb-3"><i class="bi bi-flower1 me-2"></i>Al-Ittihaad</h4>
+                    <h4 class="fw-bold mb-3"><i class="bi bi-flower1 me-2"></i>Pesantren Persatuan Islam 104 Al-Ittihaad</h4>
                     <p class="opacity-75">
-                        {{ $setting->footer_about ?? "Membentuk generasi pemimpin yang hafal Al-Qur'an, berwawasan luas, dan siap menghadapi tantangan global dengan akhlak mulia." }}
+                        {{ $setting->footer_about ?? "Berkomitmen mendidik generasi yang Tafaqquh Fiddin dan berkhidmat kepada umat melalui pendidikan berbasis Al-Qur’an dan Sunnah. Kami mengintegrasikan ilmu syar’i dan teknologi untuk membentuk santri berakhlak mulia yang siap berkontribusi bagi masyarakat." }}
                     </p>
                 </div>
                 <div class="col-md-3">
@@ -528,13 +514,13 @@
                     <h5 class="fw-bold mb-3">Hubungi Kami</h5>
                     <ul class="list-unstyled opacity-75">
                         <li class="mb-2">
-                            <i class="bi bi-whatsapp me-2"></i> {{ $setting->footer_whatsapp ?? '0812-3456-7890' }}
+                            <i class="bi bi-whatsapp me-2"></i> {{ $setting->footer_whatsapp ?? '+62 852-1404-9027' }}
                         </li>
                         <li class="mb-2">
-                            <i class="bi bi-geo-alt me-2"></i> {{ $setting->footer_address ?? 'Jl. Raya Pendidikan No. 104' }}
+                            <i class="bi bi-geo-alt me-2"></i> {{ $setting->footer_address ?? 'Jl. Raya Rancapandan Km.5 Cikajang' }}
                         </li>
                         <li class="mb-2">
-                            <i class="bi bi-envelope me-2"></i> {{ $setting->footer_email ?? 'info@alittihaad.sch.id' }}
+                            <i class="bi bi-envelope me-2"></i> {{ $setting->footer_email ?? 'ppi104.alittihaad@gmail.com' }}
                         </li>
                     </ul>
                 </div>

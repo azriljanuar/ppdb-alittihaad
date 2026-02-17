@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Info; 
+use App\Models\Info;
+use App\Models\WebsiteSetting;
 
 class HomeController extends Controller
 {
@@ -11,7 +12,8 @@ class HomeController extends Controller
 
     public function index()
     {
-        $infos = Info::all(); 
-        return view('home', compact('infos'));
+        $infos = Info::all();
+        $setting = WebsiteSetting::first();
+        return view('home', compact('infos', 'setting'));
     }
 }

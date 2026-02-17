@@ -313,25 +313,28 @@
             <div class="col-md-4">
                 <div class="feature-card card-pink">
                     <i class="bi bi-book-half feature-icon text-danger"></i>
-                    <h3 class="feature-title">Kurikulum Unggulan</h3>
-                    <p class="small mb-0">Memadukan kurikulum nasional dan kepesantrenan untuk keseimbangan dunia
-                        akhirat.</p>
+                    <h3 class="feature-title">{{ optional($setting)->feature1_title ?? 'Kurikulum Terpadu' }}</h3>
+                    <p class="small mb-0">
+                        {{ optional($setting)->feature1_desc ?? 'Memadukan kurikulum nasional dan kepesantrenan.' }}
+                    </p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="feature-card card-orange">
                     <i class="bi bi-star-fill feature-icon text-warning"></i>
-                    <h3 class="feature-title">Fasilitas Lengkap</h3>
-                    <p class="small mb-0">Lab komputer, asrama nyaman, dan sarana olahraga untuk menunjang bakat santri.
+                    <h3 class="feature-title">{{ optional($setting)->feature2_title ?? 'Prestasi Santri' }}</h3>
+                    <p class="small mb-0">
+                        {{ optional($setting)->feature2_desc ?? 'Mencetak juara di tingkat regional hingga nasional.' }}
                     </p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="feature-card card-green">
                     <i class="bi bi-heart-fill feature-icon text-success"></i>
-                    <h3 class="feature-title">Lingkungan Islami</h3>
-                    <p class="small mb-0">Membentuk karakter santri yang sopan, disiplin, dan cinta Al-Qur'an sejak
-                        dini.</p>
+                    <h3 class="feature-title">{{ optional($setting)->feature3_title ?? 'Lingkungan Islami' }}</h3>
+                    <p class="small mb-0">
+                        {{ optional($setting)->feature3_desc ?? 'Pembiasaan akhlak mulia dan ibadah sehari-hari.' }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -399,9 +402,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-5 mb-4">
-                    <h4 class="fw-bold mb-3"><i class="bi bi-flower1 me-2"></i>Al-Ittihaad</h4>
-                    <p class="opacity-75">Membentuk generasi pemimpin yang hafal Al-Qur'an, berwawasan luas, dan siap
-                        menghadapi tantangan global dengan akhlak mulia.</p>
+                    <h4 class="fw-bold mb-3"><i class="bi bi-flower1 me-2"></i>Pesantren Persatuan Islam 104 Al-Ittihaad</h4>
+                    <p class="opacity-75">Berkomitmen mendidik generasi yang Tafaqquh Fiddin dan berkhidmat kepada umat melalui pendidikan berbasis Al-Qur’an dan Sunnah. Kami mengintegrasikan ilmu syar’i dan teknologi untuk membentuk santri berakhlak mulia yang siap berkontribusi bagi masyarakat..</p>
                 </div>
                 <div class="col-md-3 mb-4">
                     <h5 class="fw-bold mb-3 text-white">Tautan Cepat</h5>
@@ -416,8 +418,8 @@
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold mb-3 text-white">Hubungi Kami</h5>
                     <ul class="list-unstyled opacity-75">
-                        <li class="mb-2"><i class="bi bi-whatsapp me-2"></i> 0812-3456-7890</li>
-                        <li class="mb-2"><i class="bi bi-geo-alt me-2"></i> Jl. Raya Pendidikan No. 104</li>
+                        <li class="mb-2"><i class="bi bi-whatsapp me-2"></i> +62 852-1404-9027</li>
+                        <li class="mb-2"><i class="bi bi-geo-alt me-2"></i> Jl. Raya Rancapandan Km.5 Cikajang</li>
                     </ul>
                 </div>
             </div>
