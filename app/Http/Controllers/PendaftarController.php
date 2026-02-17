@@ -254,26 +254,42 @@ class PendaftarController extends Controller
     // ==========================================
 
     /**
-     * DASHBOARD ADMIN (Hanya Statistik Angka)
+     * DASHBOARD ADMIN (Statistik Visual)
      * Diakses via route: /admin
      */
     public function dashboard()
     {
         $user = Auth::user();
 
-        // Filter Query Dashboard
-        $query = Pendaftar::query();
+        $baseQuery = Pendaftar::query();
         if ($user->role != 'superadmin') {
-            $query->where('jenjang', $user->jenjang_access);
+            $baseQuery->where('jenjang', $user->jenjang_access);
         }
 
-        // Hitung Statistik
-        $total_pendaftar = $query->count();
-        $sudah_bayar     = $query->clone()->where('status_pembayaran', 'Lunas')->count();
-        $belum_verifikasi = $query->clone()->where('status_pembayaran', 'Menunggu Verifikasi')->count();
+        $total_pendaftar = $baseQuery->count();
 
-        // Return ke view 'admin' (Dashboard Statistik)
-        return view('admin', compact('total_pendaftar', 'sudah_bayar', 'belum_verifikasi'));
+        $per_jenjang = $baseQuery
+            ->select('jenjang', \DB::raw('COUNT(*) as total'))
+            ->groupBy('jenjang')
+            ->orderBy('jenjang')
+            ->get();
+
+        $by_gender = $baseQuery
+            ->select('jenis_kelamin', \DB::raw('COUNT(*) as total'))
+            ->groupBy('jenis_kelamin')
+            ->get();
+
+        $by_status_lulus = $baseQuery
+            ->select('status_lulus', \DB::raw('COUNT(*) as total'))
+            ->groupBy('status_lulus')
+            ->get();
+
+        return view('admin', compact(
+            'total_pendaftar',
+            'per_jenjang',
+            'by_gender',
+            'by_status_lulus'
+        ));
     }
 
     /**

@@ -242,7 +242,7 @@
                     </div>
                     <h1 class="hero-title">{{ $setting->hero_title ?? 'Membangun Generasi' }} <br><span style="color: var(--btn-color);">{{ $setting->hero_title_highlight ?? 'Qurani & Berprestasi' }}</span></h1>
                     <p class="hero-subtitle">
-                        {{ $setting->hero_description ?? 'Bergabunglah bersama kami di Al-Ittihaad. Kurikulum terpadu berbasis Al-Qur\'an dan Sains untuk masa depan gemilang buah hati Anda.' }}
+                        {{ $setting->hero_description ?? 'Bergabunglah bersama kami di Pesantren Persatuan Islam 104 Al-Ittihaad. Kurikulum terpadu berbasis Al-Qur\'an dan Sains untuk masa depan gemilang buah hati Anda.' }}
                     </p>
                     <a href="{{ url('/daftar') }}" class="btn btn-hero-primary shadow-lg">
                         Daftar Sekarang <i class="bi bi-arrow-right ms-2"></i>
@@ -267,8 +267,8 @@
                     <div class="icon-box bg-danger bg-opacity-10 text-danger mx-auto">
                         <i class="bi bi-book-half"></i>
                     </div>
-                    <h5 class="fw-bold">{{ $setting->feature1_title ?? 'Kurikulum Terpadu' }}</h5>
-                    <p class="text-muted small">{{ $setting->feature1_desc ?? 'Memadukan kurikulum nasional dan kepesantrenan.' }}</p>
+                    <h5 class="fw-bold">{{ $setting->feature1_title ?? 'Pendidikan yang bermutu' }}</h5>
+                    <p class="text-muted small">{{ $setting->feature1_desc ?? 'Kualitas pendidikan unggul tercipta melalui sinergi kurikulum terintegrasi, pendidik kompeten, dan fasilitas memadai yang dikelola dengan manajemen efektif. Keberhasilan ini tercermin pada prestasi peserta didik serta terjaganya kesejahteraan dan motivasi guru sebagai penggerak utama sekolah.' }}</p>
                 </div>
             </div>
             <div class="col-md-4">
@@ -276,8 +276,8 @@
                     <div class="icon-box bg-warning bg-opacity-10 text-warning mx-auto">
                         <i class="bi bi-trophy-fill"></i>
                     </div>
-                    <h5 class="fw-bold">{{ $setting->feature2_title ?? 'Prestasi Santri' }}</h5>
-                    <p class="text-muted small">{{ $setting->feature2_desc ?? 'Mencetak juara di tingkat regional hingga nasional.' }}</p>
+                    <h5 class="fw-bold">{{ $setting->feature2_title ?? 'Generasi yang Tafaqquh Fiddin (Keilmuan, Spritual, Prilaku)' }}</h5>
+                    <p class="text-muted small">{{ $setting->feature2_desc ?? 'Membentuk lulusan yang memiliki pemahaman agama mendalam dan mampu mengaplikasikannya dalam kehidupan sehari-hari. Siswa dibimbing untuk istiqomah beribadah sesuai Al-Quran dan As-Sunnah serta memiliki akhlaq mulia sebagai cerminan pribadi yang shalih.' }}</p>
                 </div>
             </div>
             <div class="col-md-4">
@@ -285,8 +285,8 @@
                     <div class="icon-box bg-success bg-opacity-10 text-success mx-auto">
                         <i class="bi bi-heart-fill"></i>
                     </div>
-                    <h5 class="fw-bold">{{ $setting->feature3_title ?? 'Lingkungan Islami' }}</h5>
-                    <p class="text-muted small">{{ $setting->feature3_desc ?? 'Pembiasaan akhlak mulia dan ibadah sehari-hari.' }}</p>
+                    <h5 class="fw-bold">{{ $setting->feature3_title ?? 'Berjiwa Sosial & Cakap Berdakwah' }}</h5>
+                    <p class="text-muted small">{{ $setting->feature3_desc ?? 'Membentuk generasi yang memiliki kepekaan tinggi terhadap masalah umat serta terampil dalam berdialog. Lulusan dibekali kemampuan menyampaikan ilmu secara efektif untuk memberikan manfaat nyata bagi masyarakat luas.' }}</p>
                 </div>
             </div>
         </div>
