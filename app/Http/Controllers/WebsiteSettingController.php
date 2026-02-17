@@ -52,14 +52,32 @@ class WebsiteSettingController extends Controller
             'feature2_desc' => 'nullable|string|max:255',
             'feature3_title' => 'nullable|string|max:255',
             'feature3_desc' => 'nullable|string|max:255',
+            'footer_about' => 'nullable|string',
+            'footer_whatsapp' => 'nullable|string|max:255',
+            'footer_address' => 'nullable|string|max:255',
+            'footer_email' => 'nullable|string|max:255',
+            'footer_links_label' => 'nullable|string|max:255',
+            'footer_copyright' => 'nullable|string|max:255',
         ]);
 
         $data = $request->only([
-            'site_title', 'hero_title', 'hero_title_highlight', 
-            'hero_description', 'hero_badge',
-            'feature1_title', 'feature1_desc',
-            'feature2_title', 'feature2_desc',
-            'feature3_title', 'feature3_desc'
+            'site_title',
+            'hero_title',
+            'hero_title_highlight',
+            'hero_description',
+            'hero_badge',
+            'feature1_title',
+            'feature1_desc',
+            'feature2_title',
+            'feature2_desc',
+            'feature3_title',
+            'feature3_desc',
+            'footer_about',
+            'footer_whatsapp',
+            'footer_address',
+            'footer_email',
+            'footer_links_label',
+            'footer_copyright',
         ]);
 
         // Handle File Uploads

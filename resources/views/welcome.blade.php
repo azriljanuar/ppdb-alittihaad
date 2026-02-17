@@ -512,10 +512,12 @@
             <div class="row gy-4">
                 <div class="col-md-5">
                     <h4 class="fw-bold mb-3"><i class="bi bi-flower1 me-2"></i>Al-Ittihaad</h4>
-                    <p class="opacity-75">Membentuk generasi pemimpin yang hafal Al-Qur'an, berwawasan luas, dan siap menghadapi tantangan global dengan akhlak mulia.</p>
+                    <p class="opacity-75">
+                        {{ $setting->footer_about ?? "Membentuk generasi pemimpin yang hafal Al-Qur'an, berwawasan luas, dan siap menghadapi tantangan global dengan akhlak mulia." }}
+                    </p>
                 </div>
                 <div class="col-md-3">
-                    <h5 class="fw-bold mb-3">Tautan</h5>
+                    <h5 class="fw-bold mb-3">{{ $setting->footer_links_label ?? 'Tautan' }}</h5>
                     <ul class="list-unstyled opacity-75">
                         <li class="mb-2"><a href="#" class="text-white text-decoration-none">Beranda</a></li>
                         <li class="mb-2"><a href="{{ url('/daftar') }}" class="text-white text-decoration-none">Daftar Sekarang</a></li>
@@ -525,14 +527,22 @@
                 <div class="col-md-4">
                     <h5 class="fw-bold mb-3">Hubungi Kami</h5>
                     <ul class="list-unstyled opacity-75">
-                        <li class="mb-2"><i class="bi bi-whatsapp me-2"></i> 0812-3456-7890</li>
-                        <li class="mb-2"><i class="bi bi-geo-alt me-2"></i> Jl. Raya Pendidikan No. 104</li>
-                        <li class="mb-2"><i class="bi bi-envelope me-2"></i> info@alittihaad.sch.id</li>
+                        <li class="mb-2">
+                            <i class="bi bi-whatsapp me-2"></i> {{ $setting->footer_whatsapp ?? '0812-3456-7890' }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-geo-alt me-2"></i> {{ $setting->footer_address ?? 'Jl. Raya Pendidikan No. 104' }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-envelope me-2"></i> {{ $setting->footer_email ?? 'info@alittihaad.sch.id' }}
+                        </li>
                     </ul>
                 </div>
             </div>
             <hr class="opacity-25 my-4">
-            <div class="text-center opacity-50 small">&copy; 2025 PPDB Al-Ittihaad. All Rights Reserved.</div>
+            <div class="text-center opacity-50 small">
+                {{ $setting->footer_copyright ?? '© 2025 PPDB Al-Ittihaad. All Rights Reserved.' }}
+            </div>
         </div>
     </footer>
 

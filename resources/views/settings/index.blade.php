@@ -165,6 +165,41 @@
                             </div>
                         </div>
 
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h6 class="text-uppercase text-muted fw-bold mb-3 border-bottom pb-2">Footer Website</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Deskripsi Singkat Footer</label>
+                                    <textarea name="footer_about" rows="3" class="form-control">{{ old('footer_about', $setting->footer_about) }}</textarea>
+                                    <div class="form-text">Teks di kolom pertama footer (tentang Al-Ittihaad).</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">No. WhatsApp</label>
+                                    <input type="text" name="footer_whatsapp" class="form-control" value="{{ old('footer_whatsapp', $setting->footer_whatsapp) }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Alamat Singkat</label>
+                                    <input type="text" name="footer_address" class="form-control" value="{{ old('footer_address', $setting->footer_address) }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Email</label>
+                                    <input type="text" name="footer_email" class="form-control" value="{{ old('footer_email', $setting->footer_email) }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Judul Kolom Tautan</label>
+                                    <input type="text" name="footer_links_label" class="form-control" value="{{ old('footer_links_label', $setting->footer_links_label) }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Teks Copyright</label>
+                                    <input type="text" name="footer_copyright" class="form-control" value="{{ old('footer_copyright', $setting->footer_copyright) }}">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary fw-bold"><i class="bi bi-save me-2"></i>Simpan Perubahan</button>
                         </div>
